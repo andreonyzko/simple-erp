@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --white: #f1f1f1;
+    --green: #34AC64;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+
+html,
+body {
+    background-color: white;
+    height: 100%;
+}
+
+#root {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: min-content 1fr;
+}
+
+main {
+    padding: 20px;
+    height: 100%;
+    overflow-y: hidden;
+}

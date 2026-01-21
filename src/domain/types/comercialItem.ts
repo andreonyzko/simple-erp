@@ -1,4 +1,4 @@
-import type { ComercialItemType } from "./common";
+import type { ComercialItemType } from "./ComercialItemType";
 
 export type ComercialItem = {
   id: number;

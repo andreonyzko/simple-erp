@@ -1,0 +1,1 @@
+export type SalePurchaseStatus = "open" | "closed" | "canceled";

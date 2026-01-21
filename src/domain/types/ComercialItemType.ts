@@ -1,0 +1,1 @@
+export type ComercialItemType = "product" | "service";

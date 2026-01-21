@@ -1,6 +1,8 @@
+import type { Transaction } from "../entities/transaction";
 import { assert } from "../rules/common.rules";
 import { validateTransaction } from "../rules/transaction.rules";
-import type { PaymentMethods, Transaction, TransactionType } from "../types";
+import type { PaymentMethods } from "../types/PaymentMethods";
+import type { TransactionType } from "../types/TransactionType";
 import type { TransactionRepository } from "./types";
 
 export interface AddManualTransactionInput {

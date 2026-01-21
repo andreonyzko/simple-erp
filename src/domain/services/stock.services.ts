@@ -1,10 +1,10 @@
+import type { Product } from "../entities/product";
 import { assert } from "../rules/common.rules";
 import {
   calculateNewStockAfterPurchase,
   calculateNewStockAfterSale,
   canChangeStock,
 } from "../rules/stock.rules";
-import type { Product } from "../types";
 import type { ProductRepository, PurchaseRepository, SaleRepository } from "./types";
 
 export async function applyStockFromSale(

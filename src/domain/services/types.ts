@@ -9,7 +9,7 @@ import type {
   Transaction,
 } from "../types";
 
-interface Repository<T> {
+export interface Repository<T> {
   findById(id: number): Promise<T | null>;
   create(object: T): Promise<T>;
   update(object: T): Promise<T>;

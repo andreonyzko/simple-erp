@@ -1,5 +1,5 @@
+import type { Client } from "../entities/person";
 import { assert } from "../rules/common.rules";
-import type { Client } from "../types";
 import type { ClientRepository } from "./types";
 
 export interface CreateClientInput {

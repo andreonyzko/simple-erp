@@ -1,5 +1,5 @@
+import type { Supplier } from "../entities/person";
 import { assert } from "../rules/common.rules";
-import type { Supplier as Supplier } from "../types";
 import type { SupplierRepository } from "./types";
 
 export interface CreateSupplierInput {

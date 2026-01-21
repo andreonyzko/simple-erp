@@ -1,5 +1,5 @@
+import type { Service } from "../entities/service";
 import { assert } from "../rules/common.rules";
-import type { Service } from "../types";
 import type { ServiceRepository } from "./types";
 
 export interface CreateServiceInput {

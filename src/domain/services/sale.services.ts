@@ -1,3 +1,5 @@
+import type { Sale } from "../entities/sale";
+import type { Transaction } from "../entities/transaction";
 import { assert } from "../rules/common.rules";
 import {
   calculatePaymentStatus,
@@ -5,12 +7,8 @@ import {
 } from "../rules/payment.rules";
 import { calculateSaleTotal, canCancelSale, validateSale } from "../rules/sale.rules";
 import { validateTransaction } from "../rules/transaction.rules";
-import type {
-  ComercialItem,
-  PaymentMethods,
-  Sale,
-  Transaction,
-} from "../types";
+import type { ComercialItem } from "../types/comercialItem";
+import type { PaymentMethods } from "../types/PaymentMethods";
 import type { SaleRepository, TransactionRepository } from "./types";
 
 export interface AddPaymentToSaleInput {

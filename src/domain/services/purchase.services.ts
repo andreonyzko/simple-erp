@@ -1,3 +1,5 @@
+import type { Purchase } from "../entities/purchase";
+import type { Transaction } from "../entities/transaction";
 import { assert } from "../rules/common.rules";
 import { calculatePaymentStatus, canReceivePayment } from "../rules/payment.rules";
 import {
@@ -5,7 +7,8 @@ import {
   validatePurchase,
 } from "../rules/purchase.rules";
 import { validateTransaction } from "../rules/transaction.rules";
-import type { ComercialItem, PaymentMethods, Purchase, Transaction } from "../types";
+import type { ComercialItem } from "../types/comercialItem";
+import type { PaymentMethods } from "../types/PaymentMethods";
 import type { PurchaseRepository, TransactionRepository } from "./types";
 
 export interface CreatePurchaseInput {

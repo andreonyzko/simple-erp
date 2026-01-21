@@ -1,5 +1,5 @@
+import type { Product } from "../entities/product";
 import { assert } from "../rules/common.rules";
-import type { Product } from "../types";
 import type { ProductRepository } from "./types";
 
 export interface CreateProductInput {

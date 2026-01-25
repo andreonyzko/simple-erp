@@ -32,10 +32,10 @@ O banco de dados é a **fonte única de verdade** do sistema. Toda persistência
 ## 3. Estrutura geral do banco
 
 ```txt
-Database: erp_db
+Database: erp-database
 
 Tables:
-- calendar_events
+- calendar
 - clients
 - suppliers
 - products
@@ -53,7 +53,7 @@ Todas as tabelas utilizam:
 
 ## 4. Tabelas e índices
 
-## 4.1 calendar_events
+## 4.1 calendar
 
 ### Campos
 

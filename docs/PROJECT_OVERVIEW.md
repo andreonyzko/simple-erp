@@ -2,101 +2,114 @@
 
 ## 1. O que é este projeto
 
-Este projeto é um **Sistema ERP (Enterprise Resource Planning) Web**, desenvolvido como **PWA (Progressive Web App)**, com funcionamento **100% offline**, **sem backend** e **sem dependência de servidor**.
+Este projeto é um **Sistema ERP (Enterprise Resource Planning) Web**, desenvolvido como uma **PWA (Progressive Web App)**, com funcionamento **100% offline**, **sem backend** e **sem dependência de servidor**.
 
-Toda a aplicação roda no navegador e utiliza **IndexedDB**, por meio da biblioteca **Dexie**, como fonte única de persistência de dados.
+Toda a aplicação roda integralmente no navegador e utiliza **IndexedDB**, por meio da biblioteca **Dexie**, como **fonte única de persistência de dados**.
 
-O sistema foi projetado para pequenos e médios negócios que precisam de controle administrativo local, simples e confiável.
+O sistema foi concebido para pequenos e médios negócios que precisam de um controle administrativo **local, simples, confiável e previsível**, sem complexidade desnecessária.
 
 ---
 
-## 2. Objetivo principal
+## 2. Objetivo do projeto
 
-O objetivo do projeto é fornecer um **ERP modular, performático e extensível**, capaz de gerenciar operações administrativas comuns, mantendo:
+O objetivo principal é fornecer um **ERP modular, extensível e de fácil manutenção**, capaz de gerenciar operações administrativas comuns, mantendo como premissas centrais:
 
 * Funcionamento offline-first
-* Simplicidade arquitetural
-* Clareza de regras de negócio
-* Facilidade de manutenção
+* Arquitetura clara e previsível
+* Domínio explícito e bem definido
+* Histórico financeiro imutável
 * Evolução segura do código
 
-O projeto **não busca competir com ERPs corporativos em nuvem**, mas sim resolver problemas práticos do dia a dia de forma local.
-
-### Núcleo financeiro
-
-O sistema possui um **núcleo financeiro baseado em movimentações (Transactions)**, separando claramente:
-
-- Eventos comerciais (vendas e compras)
-- Movimentações de dinheiro (entradas e saídas)
-
-Essa abordagem garante:
-- Histórico financeiro imutável
-- Rastreabilidade de pagamentos
-- Suporte a pagamentos parciais
-- Cancelamentos com estorno explícito
-
-O sistema **não edita nem apaga registros financeiros**, apenas cria novos lançamentos corretivos quando necessário.
+O projeto **não busca competir com ERPs corporativos em nuvem**, nem atender cenários complexos de múltiplos usuários ou sincronização.
 
 ---
 
-## 3. Público-alvo
+## 3. Princípios fundamentais
+
+### 3.1 Offline-first
+
+O sistema deve funcionar integralmente sem conexão com a internet. Nenhuma funcionalidade essencial depende de serviços externos.
+
+### 3.2 Client-side only
+
+Toda a lógica de negócio, validações e persistência de dados ocorrem no client.
+
+Não existe backend, API, sincronização ou comunicação com servidores.
+
+### 3.3 Domínio em primeiro lugar
+
+As regras de negócio são tratadas como o **núcleo do sistema**. A interface do usuário e a infraestrutura são consideradas detalhes de implementação.
+
+Qualquer decisão ambígua deve ser resolvida no domínio.
+
+### 3.4 Simplicidade consciente
+
+A arquitetura evita abstrações desnecessárias. Soluções simples e explícitas são preferidas a generalizações prematuras.
+
+---
+
+## 4. Núcleo financeiro
+
+O núcleo do sistema é o **controle de movimentações financeiras**, modelado explicitamente através da entidade **Transaction**.
+
+Eventos comerciais, como vendas e compras, existem para **gerar movimentações financeiras**, e não o contrário.
+
+Essa abordagem garante:
+
+* Histórico financeiro imutável
+* Rastreabilidade completa de entradas e saídas
+* Suporte nativo a pagamentos parciais
+* Cancelamentos explícitos via lançamentos corretivos
+
+O sistema **nunca edita nem remove registros financeiros**. Correções e estornos são sempre representados por novas Transactions.
+
+---
+
+## 5. Escopo funcional
+
+### 5.1 Funcionalidades contempladas
+
+* Cadastro de clientes
+* Cadastro de fornecedores
+* Cadastro de produtos
+* Cadastro de serviços
+* Registro de vendas
+* Registro de compras
+* Controle de pagamentos por meio de Transactions
+* Agenda de compromissos (calendar)
+* Relacionamentos lógicos entre entidades
+
+### 5.2 Funcionalidades fora de escopo
+
+As seguintes funcionalidades **não fazem parte do projeto**, por decisão arquitetural consciente:
+
+* Backend ou API
+* Autenticação de usuários
+* Multiusuário
+* Controle de permissões
+* Sincronização em nuvem
+* Integrações externas
+* Emissão fiscal
+* Contabilidade formal
+
+---
+
+## 6. Público-alvo
+
+O sistema é voltado para:
 
 * Pequenos comerciantes
 * Prestadores de serviço
 * Negócios locais
 * Uso individual ou em um único dispositivo
 
-O sistema **não é multiusuário** e **não possui controle de permissões**.
+O projeto assume **um único operador** e **um único ambiente de uso**.
 
 ---
 
-## 4. Escopo funcional
+## 7. Tecnologias
 
-### Funcionalidades contempladas
-
-* Cadastro de clientes
-* Cadastro de produtos
-* Cadastro de serviços
-* Registro de vendas
-* Registro de compras
-* Controle de pagamentos
-* Agenda / calendário de compromissos
-* Relacionamentos entre entidades (ex: vendas ↔ clientes)
-
-### Funcionalidades fora de escopo
-
-* Backend ou API
-* Autenticação de usuários
-* Sincronização em nuvem
-* Multiusuário
-* Controle de permissões
-* Integração com sistemas externos
-
-Essas exclusões são **decisões arquiteturais conscientes**, não limitações técnicas.
-
----
-
-## 5. Princípios fundamentais do projeto
-
-### Offline-first
-
-O sistema deve funcionar integralmente sem conexão com a internet.
-
-### Client-side only
-
-Toda a lógica de negócio, persistência e validações ocorrem no client.
-
-### Domínio em primeiro lugar
-
-As regras de negócio são centralizadas em uma camada de domínio, separadas da interface e da infraestrutura.
-
-### Simplicidade antes de abstração
-
-Evita-se overengineering. Abstrações só são criadas quando há benefício real.
-
----
-
-## 6. Tecnologias principais
+As principais tecnologias utilizadas são:
 
 * TypeScript
 * PWA
@@ -104,24 +117,27 @@ Evita-se overengineering. Abstrações só são criadas quando há benefício re
 * Dexie
 * Framework frontend (ex: React)
 
-As tecnologias de UI são consideradas **detalhes de implementação**, não parte do domínio.
+As tecnologias de UI são consideradas **detalhes de implementação** e não fazem parte do domínio.
 
 ---
 
-## 7. Filosofia de evolução
+## 8. Filosofia de evolução
 
-O projeto foi pensado para:
+O projeto foi modelado para:
 
 * Crescer de forma incremental
 * Permitir refatorações seguras
-* Ser facilmente compreendido por novos desenvolvedores
-* Servir como base sólida para futuras funcionalidades
+* Manter regras de negócio explícitas
+* Evitar acoplamentos acidentais
+* Facilitar o entendimento por novos desenvolvedores
+
+A documentação é parte essencial do projeto e deve evoluir junto com o código.
 
 ---
 
-## 8. Leitura recomendada
+## 9. Leitura recomendada
 
-Para compreender completamente o projeto, leia os documentos na seguinte ordem:
+Para compreender completamente o projeto, a leitura recomendada é:
 
 1. PROJECT_OVERVIEW.md (este documento)
 2. ARCHITECTURE.md
@@ -131,4 +147,4 @@ Para compreender completamente o projeto, leia os documentos na seguinte ordem:
 
 ---
 
-Este documento define **o que o projeto é e o que ele não é**. As decisões técnicas e estruturais estão detalhadas nos documentos seguintes.
+Este documento define **o que o projeto é, o que ele não é e quais princípios norteiam todas as decisões técnicas e de domínio**.

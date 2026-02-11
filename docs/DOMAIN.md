@@ -2,9 +2,18 @@
 
 ## 1. Visão geral do domínio
 
-Este documento define de forma **detalhada, normativa e definitiva** o domínio do Sistema ERP PWA. Ele descreve **entidades**, **tipos**, **atributos**, **regras de negócio**, **relacionamentos** e **limites conceituais**.
+Este documento define de forma **normativa, explícita e definitiva** o domínio do Sistema ERP PWA.
 
-Tudo o que está aqui é considerado **fonte de verdade do negócio**. Implementações técnicas devem se adaptar a este documento, e não o contrário.
+Aqui estão descritos:
+
+- Conceitos centrais do negócio
+- Entidades e seus atributos
+- Tipos auxiliares
+- Regras de negócio
+- Relacionamentos lógicos
+- Limites conceituais
+
+Tudo o que está documentado neste arquivo é considerado **fonte única de verdade do domínio**. Implementações técnicas devem **se adaptar ao domínio**, e nunca o contrário.
 
 ---
 
@@ -14,15 +23,21 @@ Tudo o que está aqui é considerado **fonte de verdade do negócio**. Implement
 
 Todos os termos definidos neste documento devem ser utilizados de forma consistente em:
 
-* Código
-* Nomes de arquivos
-* Services
-* Repositories
-* Tipos e enums
+- Código
+- Nomes de arquivos
+- Services
+- Repositories
+- Types e enums
+
+Termos diferentes para o mesmo conceito são proibidos.
+
+---
 
 ### 2.2 Domínio financeiro como núcleo
 
-O núcleo do sistema é o **controle de entradas e saídas financeiras**. Compras e vendas existem para gerar movimentações financeiras, registradas através de **Transactions**.
+O núcleo do sistema é o **controle de movimentações financeiras**.
+
+Eventos comerciais, como vendas e compras, existem para **gerar movimentações financeiras**, representadas explicitamente pela entidade **Transaction**.
 
 ---
 
@@ -32,57 +47,49 @@ O núcleo do sistema é o **controle de entradas e saídas financeiras**. Compra
 
 Representa uma **entrada ou saída financeira** no negócio.
 
-Uma Transaction pode representar:
-
-* Pagamento parcial ou total de uma venda
-* Pagamento parcial ou total de uma compra
-* Movimentação financeira manual (entrada ou saída)
+Toda movimentação de dinheiro no sistema é representada por uma Transaction.
 
 #### Atributos
 
-* id
-* title
-* description (opcional)
-* type (TransactionType)
-* origin (TransactionOrigin)
-* value
-* method (PaymentMethods)
-* date
-* referenceId (opcional)
+- id
+- title
+- description (opcional)
+- type (TransactionType)
+- origin (TransactionOrigin)
+- value
+- method (PaymentMethods)
+- date
+- referenceId (opcional)
 
 #### Regras de negócio
 
-* Representa pagamentos parciais ou integrais
-* Pode existir sem `referenceId` quando for manual
+- Transactions representam pagamentos parciais ou integrais
+- Uma Transaction pode existir sem `referenceId` quando for manual
+- Transactions **nunca são editadas nem removidas**
 
-**Toda Transaction de venda:**
+**Transactions de venda:**
 
-* title = "Venda #ID"
-* type = in
-* origin = sale
-* referenceId = id da venda
+- title = "Venda #ID"
+- type = in
+- origin = sale
+- referenceId = id da venda
 
-**Toda Transaction de compra:**
+**Transactions de compra:**
 
-* title = "Compra #ID"
+- title = "Compra #ID"
+- type = out
+- origin = purchase
+- referenceId = id da compra
 
-* type = out
-
-* origin = purchase
-
-* referenceId = id da compra
-
-* Uma venda ou compra pode possuir **múltiplas Transactions**, representando pagamentos parciais
-
-* Transactions de venda e compra **somente podem ser lançadas pela página da própria venda ou compra**
-
-* Transactions manuais **são lançadas exclusivamente pela página de transactions**
+- Uma venda ou compra pode possuir **múltiplas Transactions**
+- Transactions de venda e compra **só podem ser lançadas a partir da própria venda ou compra**
+- Transactions manuais **só podem ser lançadas pela página de transactions**
 
 Transaction é a **entidade mais importante do sistema**.
 
 ---
 
-## 4. Entidades de negócio
+## 4. Entidades comerciais
 
 ### Sale
 
@@ -90,32 +97,39 @@ Representa uma venda de produtos e/ou serviços.
 
 #### Atributos
 
-* id
-* clientId
-* items
-* affectStock (boolean)
-* totalValue
-* paymentStatus (PaymentStatus)
-* status (SalePurchaseStatus)
-* date
-* notes (opcional)
+- id
+- clientId (opcional)
+- items
+- affectStock (boolean)
+- totalValue
+- status (SalePurchaseStatus)
+- date
+- notes (opcional)
 
 #### Regras de negócio
 
-* Venda sem cliente cadastrado possui `clientId = 0`
-* Pode conter produtos e serviços
-* `totalValue` é, por padrão, a soma dos items, mas pode ser sobrescrito manualmente
-* O usuário decide se o estoque será afetado
-* É possível lançar Transactions diretamente **somente na página da venda**
-* `paymentStatus` é reflexo das Transactions:
+- `clientId` é opcional; sua ausência indica uma venda sem cliente cadastrado
+- Pode conter produtos e serviços
+- `totalValue` é, por padrão, a soma dos items, mas pode ser sobrescrito manualmente
+- O usuário decide se o estoque será afetado
 
-  * pending: soma = 0
-  * partial: soma entre 0 e totalValue
-  * paid: soma >= totalValue
-* Ao cancelar uma venda:
+#### Pagamento
 
-  * É gerada uma Transaction de saída (`out`)
-  * O valor é a soma das Transactions que referenciam a venda
+O status de pagamento **não é armazenado**.
+
+Ele é sempre calculado dinamicamente com base nas Transactions associadas:
+
+- pending: soma = 0
+- partial: soma > 0 e < totalValue
+- paid: soma >= totalValue
+
+#### Cancelamento
+
+Ao cancelar uma venda:
+
+- A venda muda para o estado `canceled`
+- É gerada uma Transaction de saída (`out`)
+- O valor da Transaction corretiva é a soma das Transactions da venda
 
 ---
 
@@ -125,32 +139,39 @@ Representa uma compra de produtos de fornecedores.
 
 #### Atributos
 
-* id
-* supplierId (opcional)
-* items
-* totalValue
-* affectStock (boolean)
-* paymentStatus (PaymentStatus)
-* status (SalePurchaseStatus)
-* date
-* notes (opcional)
+- id
+- supplierId (opcional)
+- items
+- affectStock (boolean)
+- totalValue
+- status (SalePurchaseStatus)
+- date
+- notes (opcional)
 
 #### Regras de negócio
 
-* Pode ou não conter fornecedor
-* Contém apenas produtos
-* `totalValue` é, por padrão, a soma dos items, mas pode ser sobrescrito
-* O usuário escolhe se o estoque será incrementado
-* É possível lançar Transactions diretamente **somente na página da compra**
-* `paymentStatus` é reflexo das Transactions:
+- Pode ou não possuir fornecedor
+- Contém apenas produtos
+- `totalValue` é, por padrão, a soma dos items, mas pode ser sobrescrito
+- O usuário decide se o estoque será incrementado
 
-  * pending: soma = 0
-  * partial: soma entre 0 e totalValue
-  * paid: soma >= totalValue
-* Ao cancelar uma compra:
+#### Pagamento
 
-  * É gerada uma Transaction de entrada (`in`)
-  * O valor é a soma das Transactions que referenciam a compra
+O status de pagamento **não é armazenado**.
+
+Ele é sempre calculado dinamicamente com base nas Transactions associadas:
+
+- pending: soma = 0
+- partial: soma > 0 e < totalValue
+- paid: soma >= totalValue
+
+#### Cancelamento
+
+Ao cancelar uma compra:
+
+- A compra muda para o estado `canceled`
+- É gerada uma Transaction de entrada (`in`)
+- O valor da Transaction corretiva é a soma das Transactions da compra
 
 ---
 
@@ -158,49 +179,47 @@ Representa uma compra de produtos de fornecedores.
 
 ### Client
 
-Representa uma pessoa física ou jurídica que realiza compras no negócio.
+Representa uma pessoa física ou jurídica que realiza compras.
 
 #### Atributos
 
-* id
-* name
-* document (opcional)
-* address (opcional)
-* phone (opcional)
-* notes (opcional)
-* active (boolean)
-* createdAt
+- id
+- name
+- document (opcional)
+- address (opcional)
+- phone (opcional)
+- notes (opcional)
+- active (boolean)
+- createdAt
 
 #### Regras de negócio
 
-* Cliente desativado permanece no histórico
-* Cliente desativado não pode ser referenciado em novos registros
-* `document` representa CPF ou CNPJ
-* `address` é uma string simples
+- Clientes desativados permanecem no histórico
+- Clientes desativados não podem ser utilizados em novos registros
+- Services devem validar se a entidade já está no estado solicitado antes de persistir (evitar toggles redundantes)
 
 ---
 
 ### Supplier
 
-Representa uma pessoa física ou jurídica que fornece produtos ao negócio.
+Representa uma pessoa física ou jurídica que fornece produtos.
 
 #### Atributos
 
-* id
-* name
-* document (opcional)
-* address (opcional)
-* phone (opcional)
-* notes (opcional)
-* active (boolean)
-* createdAt
+- id
+- name
+- document (opcional)
+- address (opcional)
+- phone (opcional)
+- notes (opcional)
+- active (boolean)
+- createdAt
 
 #### Regras de negócio
 
-* Fornecedor desativado permanece no histórico
-* Fornecedor desativado não pode ser referenciado em novos registros
-* `document` representa CPF ou CNPJ
-* `address` é uma string simples
+- Fornecedores desativados permanecem no histórico
+- Fornecedores desativados não podem ser utilizados em novos registros
+- Services devem validar se a entidade já está no estado solicitado antes de persistir (evitar toggles redundantes)
 
 ---
 
@@ -210,22 +229,22 @@ Representa um item físico comercializado.
 
 #### Atributos
 
-* id
-* name
-* supplierId (opcional)
-* stockControl (boolean)
-* stock (opcional)
-* cost (opcional)
-* sellPrice (opcional)
-* active (boolean)
-* notes (opcional)
+- id
+- name
+- supplierId (opcional)
+- stockControl (boolean)
+- stock (opcional)
+- cost (opcional)
+- sellPrice (opcional)
+- active (boolean)
+- notes (opcional)
 
 #### Regras de negócio
 
-* Pode ou não pertencer a um fornecedor
-* Se `stockControl` for falso, não existe controle de estoque
-* Valores de custo e venda são opcionais
-* Produto desativado não aparece em novos registros, mas permanece no histórico
+- Pode ou não pertencer a um fornecedor
+- Se `stockControl` for falso, não existe controle de estoque
+- Estoque nunca pode ficar negativo
+- Produto desativado permanece no histórico
 
 ---
 
@@ -235,17 +254,16 @@ Representa um serviço prestado pelo negócio.
 
 #### Atributos
 
-* id
-* name
-* price (opcional)
-* active (boolean)
-* notes (opcional)
+- id
+- name
+- price (opcional)
+- active (boolean)
+- notes (opcional)
 
 #### Regras de negócio
 
-* Valor de venda é opcional
-* Não possui estoque
-* Não participa de compras
+- Não possui estoque
+- Não participa de compras
 
 ---
 
@@ -257,19 +275,19 @@ Representa um evento da agenda.
 
 #### Atributos
 
-* id
-* title
-* description (opcional)
-* date
+- id
+- title
+- description (opcional)
+- date
 
 #### Regras de negócio
 
-* É totalmente desacoplado de outras entidades
-* Não possui impacto financeiro
+- Não possui impacto financeiro
+- Não se relaciona com outras entidades
 
 ---
 
-## 7. Conceitos auxiliares (Types)
+## 7. Tipos auxiliares
 
 ### ComercialItem
 
@@ -277,244 +295,138 @@ Representa um item dentro de uma venda ou compra.
 
 #### Atributos
 
-* id
-* type (ComercialItemType)
-* referenceId
-* quantity
-* unitValue
+- id
+- type (ComercialItemType)
+- referenceId
+- quantity
+- unitValue
 
 #### Regras de negócio
 
-* Compras não podem conter items do tipo service
-* `unitValue` recebe o valor padrão do produto/serviço, mas pode ser sobrescrito
+- Compras não podem conter items do tipo service
 
 ---
 
 ### PaymentMethods
 
-Representa os métodos de pagamento.
+Valores possíveis:
 
-Valores:
-
-* pix
-* cash
-* ted
-* boleto
-* debit_card
-* credit_card
-
----
-
-### PaymentStatus
-
-Indica o progresso de pagamento de uma venda ou compra.
-
-Valores:
-
-* pending
-* partial
-* paid
-
-Regras:
-
-* pending: soma das Transactions = 0
-* partial: soma entre 0 e totalValue
-* paid: soma >= totalValue
+- pix
+- cash
+- ted
+- boleto
+- debit_card
+- credit_card
 
 ---
 
 ### TransactionType
 
-Indica se a Transaction é entrada ou saída.
+Valores possíveis:
 
-Valores:
-
-* in
-* out
-
-Regras:
-
-* Venda: in
-* Compra: out
-* Venda cancelada: out
-* Compra cancelada: in
+- in
+- out
 
 ---
 
 ### TransactionOrigin
 
-Indica a origem da Transaction.
+Valores possíveis:
 
-Valores:
-
-* sale
-* purchase
-* manual
-
-Regras:
-
-* Venda → sale
-* Compra → purchase
-* Cadastro manual → manual
+- sale
+- purchase
+- manual
 
 ---
 
 ### ComercialItemType
 
-Indica o tipo do item comercial.
+Valores possíveis:
 
-Valores:
-
-* product
-* service
-
-Regras:
-
-* Compras não podem conter service
+- product
+- service
 
 ---
 
 ### SalePurchaseStatus
 
-Indica o status de uma venda ou compra.
+Valores possíveis:
 
-Valores:
-
-* open
-* closed
-* canceled
+- open
+- closed
+- canceled
 
 ---
 
-## 8. Regras operacionais transversais
-
-### 8.1 Estados e transições (State Machine)
+## 8. Estados e transições
 
 As entidades **Sale** e **Purchase** seguem uma máquina de estados explícita.
 
-Estados possíveis:
+### Estados possíveis
 
-* open
-* closed
-* canceled
+- open
+- closed
+- canceled
 
-Transições válidas:
+### Transições válidas
 
-* open → closed
-* open → canceled
-* closed → canceled
+- open → closed
+- open → canceled
+- closed → canceled
 
-Transições inválidas:
+### Transições inválidas
 
-* canceled → open
-* canceled → closed
+- closed → open
+- canceled → open
+- canceled → closed
 
-Uma vez cancelada, a entidade é considerada **final**.
-
----
-
-### 8.2 Regras de edição por estado
-
-#### Sale / Purchase em estado `open`
-
-Campos editáveis:
-
-* items
-* affectStock
-* totalValue
-* notes
-* date
-
-Campos não editáveis:
-
-* id
-* paymentStatus (derivado)
-
-#### Sale / Purchase em estado `closed`
-
-Campos editáveis:
-
-* notes
-
-Campos não editáveis:
-
-* items
-* affectStock
-* totalValue
-* date
-* paymentStatus
-
-#### Sale / Purchase em estado `canceled`
-
-* Nenhum campo é editável
+Uma vez fechada ou cancelada, a entidade **nunca retorna ao estado open**.
 
 ---
 
-### 8.3 Regras de exclusão
+## 9. Regras transversais
 
-* Nenhuma entidade financeira pode ser excluída fisicamente
-* Sale e Purchase devem ser canceladas quando inválidas
-* Transaction nunca pode ser excluída
+### 9.1 Histórico imutável
 
----
-
-### 8.4 Cancelamento
-
-* Cancelamento gera sempre uma Transaction corretiva
-* Cancelamento não remove histórico
+- Nenhuma entidade financeira pode ser excluída
+- Transactions nunca são editadas ou removidas
 
 ---
 
-### 8.5 Estoque
+### 9.2 Estoque
 
-* Estoque **não pode ficar negativo**
-* Estoque só é alterado se `affectStock = true`
-* Cancelamentos **revertem o estoque** conforme a decisão original
-
----
-
-### 8.6 Regras de datas
-
-* Sale, Purchase e CalendarEvent podem possuir datas passadas ou futuras
-* Transaction **não pode** possuir data futura
-* Campos `createdAt` **não podem** ser alterados nem definidos no futuro
+- Estoque nunca pode ficar negativo
+- Estoque só é alterado se `affectStock = true`
+- Cancelamentos revertem estoque conforme a decisão original
 
 ---
 
-### 8.7 Transactions manuais
+### 9.3 Datas
 
-* Transaction manual:
-
-  * origin deve ser obrigatoriamente `manual`
-  * não pode possuir `referenceId`
-  * não pode referenciar Sale ou Purchase
+- Sale, Purchase e CalendarEvent podem ter datas passadas ou futuras
+- Transaction **não pode** ter data futura
+- `createdAt` nunca pode ser alterado
 
 ---
 
-### 8.8 Pagamento
+### 9.4 Transactions manuais
 
-* paymentStatus é sempre derivado das Transactions
-* Nunca pode ser alterado manualmente
-
----
-
-## 9. Limites do domínio
-
-Este domínio não contempla:
-
-* Emissão fiscal
-* Contabilidade
-* Multiusuário
-* Permissões
-* Sincronização em nuvem
+- origin deve ser `manual`
+- Não possuem `referenceId`
+- Não podem referenciar Sale ou Purchase
 
 ---
 
-## 10. Evolução do domínio
+## 10. Limites do domínio
 
-Este domínio foi modelado para:
+Este domínio **não contempla**:
 
-* Evoluir incrementalmente
-* Manter histórico imutável
-* Garantir rastreabilidade financeira
-* Servir como base sólida para regras futuras
+- Emissão fiscal
+- Contabilidade formal
+- Multiusuário
+- Permissões
+- Sincronização
+
+---
+
+Este documento define **as regras absolutas do negócio** e deve ser respeitado integralmente em toda implementação.

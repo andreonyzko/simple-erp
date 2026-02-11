@@ -1,45 +1,53 @@
 # Busca e Filtros – Sistema ERP PWA
 
-## 1. Objetivo do documento
+## 1. Objetivo deste documento
 
-Este documento especifica **como funcionam as buscas e os filtros** no Sistema ERP PWA.
+Este documento define **de forma normativa** como funcionam as buscas e os filtros no Sistema ERP PWA.
 
-Ele define:
+Ele estabelece:
 
-* O comportamento da **barra única de busca**
+* O comportamento da **barra única de busca textual**
 * Os **campos considerados** na busca por entidade
-* Os **filtros disponíveis** por tipo de entidade
-* A separação clara entre **busca textual** e **filtros estruturados**
+* Os **filtros estruturados disponíveis** por entidade
+* A separação clara entre **busca**, **filtros** e **dados derivados**
 
-Este documento serve como referência para:
+Este documento serve como contrato entre:
 
-* Implementação da UI
-* Implementação dos services
-* Definição de índices no banco
+* UI
+* Services
+* Repositories
 
 ---
 
 ## 2. Conceitos fundamentais
 
-### 2.1 Busca (Search)
+### 2.1 Busca textual (Search)
 
-* A busca ocorre por **uma única barra de pesquisa**
-* A busca é **textual**
-* O valor digitado é aplicado a **campos específicos**, dependendo da entidade
-* A busca **não substitui filtros**, apenas reduz o conjunto inicial de dados
+* Existe **uma única barra de busca** por listagem
+* A busca é **exclusivamente textual**
+* O texto digitado é aplicado apenas a **campos previamente definidos**
+* A busca **reduz o universo inicial de dados**, mas não substitui filtros
 
-### 2.2 Filtros (Filters)
+A busca nunca executa cálculos derivados.
 
-* Filtros ficam em um **formulário separado**
-* Cada filtro possui seu próprio input
-* Filtros são **estruturados** (booleanos, ranges, enums, datas)
+---
+
+### 2.2 Filtros estruturados (Filters)
+
+* Filtros são aplicados por meio de um formulário separado
+* Cada filtro possui um input específico
+* Filtros são **estruturados** (booleanos, enums, ranges, datas)
 * Filtros refinam o resultado da busca
+
+---
 
 ### 2.3 Ordem de aplicação
 
-1. Busca textual
-2. Filtros estruturados
-3. Regras derivadas (cálculos em service)
+A ordem de aplicação é **obrigatória**:
+
+1. Busca textual (repository / índice)
+2. Filtros estruturados simples (repository / índice)
+3. Filtros derivados (service / memória)
 
 ---
 
@@ -47,9 +55,9 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * title
+* title
 
 ### Filtros
 
@@ -64,22 +72,24 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * name
-  * document
-  * phone
+* name
+* document
+* phone
 
 ### Filtros
 
 * Status:
 
-  * ativado
+  * ativo
   * desativado
+
 * Situação financeira:
 
   * com dívidas
   * em dia
+
 * Dívida:
 
   * valor mínimo
@@ -87,8 +97,8 @@ Este documento serve como referência para:
 
 ### Observações
 
-* Dívida é valor **derivado** (sales + transactions)
-* Filtros financeiros são aplicados no service
+* Dívida é um **dado derivado** (sales + transactions)
+* Filtros financeiros são aplicados exclusivamente no service
 
 ---
 
@@ -96,22 +106,24 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * name
-  * document
-  * phone
+* name
+* document
+* phone
 
 ### Filtros
 
 * Status:
 
-  * ativado
+  * ativo
   * desativado
+
 * Situação financeira:
 
   * devendo
   * em dia
+
 * Dívida:
 
   * valor mínimo
@@ -119,7 +131,8 @@ Este documento serve como referência para:
 
 ### Observações
 
-* Dívida é valor **derivado** (purchases + transactions)
+* Dívida é um **dado derivado** (purchases + transactions)
+* Filtros financeiros são aplicados exclusivamente no service
 
 ---
 
@@ -127,28 +140,36 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * name
+* name
 
 ### Filtros
 
-* Estoque:
+* Controle de estoque:
 
   * estoque não controlado
   * em estoque
   * sem estoque
+
+* Estoque:
+
+  * quantidade mínima
+  * quantidade máxima
+
 * Custo:
 
   * valor mínimo
   * valor máximo
+
 * Valor de venda:
 
   * valor mínimo
   * valor máximo
+
 * Status:
 
-  * ativado
+  * ativo
   * desativado
 
 ---
@@ -157,9 +178,9 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * name
+* name
 
 ### Filtros
 
@@ -167,9 +188,10 @@ Este documento serve como referência para:
 
   * valor mínimo
   * valor máximo
+
 * Status:
 
-  * ativado
+  * ativo
   * desativado
 
 ---
@@ -178,9 +200,9 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * nome do cliente
+* nome do cliente
 
 ### Filtros
 
@@ -188,24 +210,29 @@ Este documento serve como referência para:
 
   * mínimo
   * máximo
-* Status de pagamento:
 
-  * pendente
-  * parcial
-  * pago
 * Status da venda:
 
-  * aberta
-  * fechada
-  * cancelada
+  * open
+  * closed
+  * canceled
+
 * Período:
 
   * data inicial
   * data final
 
+* Status de pagamento:
+
+  * pending
+  * partial
+  * paid
+
 ### Observações
 
 * Busca por nome do cliente ocorre via relacionamento Client → Sale
+* Vendas sem `clientId` não participam da busca por nome de cliente
+* Status de pagamento é um **dado derivado**, calculado no service
 
 ---
 
@@ -213,9 +240,9 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * nome do fornecedor
+* nome do fornecedor
 
 ### Filtros
 
@@ -223,24 +250,28 @@ Este documento serve como referência para:
 
   * mínimo
   * máximo
-* Status de pagamento:
 
-  * pendente
-  * parcial
-  * pago
 * Status da compra:
 
-  * aberta
-  * fechada
-  * cancelada
+  * open
+  * closed
+  * canceled
+
 * Período:
 
   * data inicial
   * data final
 
+* Status de pagamento:
+
+  * pending
+  * partial
+  * paid
+
 ### Observações
 
 * Busca por nome do fornecedor ocorre via relacionamento Supplier → Purchase
+* Status de pagamento é um **dado derivado**, calculado no service
 
 ---
 
@@ -248,25 +279,28 @@ Este documento serve como referência para:
 
 ### Busca
 
-* Campos considerados:
+Campos considerados:
 
-  * title
+* title
 
 ### Filtros
 
 * Origem:
 
-  * venda
-  * compra
+  * sale
+  * purchase
   * manual
+
 * Tipo:
 
-  * entrada
-  * saída
+  * in
+  * out
+
 * Valor:
 
   * mínimo
   * máximo
+
 * Período:
 
   * data inicial
@@ -276,15 +310,15 @@ Este documento serve como referência para:
 
 ## 11. Considerações técnicas
 
-* Campos derivados **não são indexados**
+* Campos derivados nunca são indexados
 * Busca textual utiliza índices simples quando possível
-* Filtros de range utilizam índices numéricos
-* Combinações complexas são tratadas no service
+* Filtros por range utilizam índices numéricos
+* Combinações complexas são resolvidas no service
 
 ---
 
 ## 12. Regra final
 
-> A busca **reduz o universo de dados**. Os filtros **refinam os resultados**.
+> A busca **reduz o conjunto de dados**. Os filtros **refinam o resultado**.
 
-Este documento define o **contrato funcional de busca e filtros** do sistema.
+Qualquer cálculo ou decisão derivada pertence exclusivamente aos services.

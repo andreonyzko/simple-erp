@@ -1,1 +1,0 @@
-export type TransactionOrigin = "sale" | "purchase" | "manual";

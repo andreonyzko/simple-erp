@@ -1,1 +1,0 @@
-export type PaymentStatus = "pending" | "partial" | "paid";

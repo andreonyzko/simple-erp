@@ -25,3 +25,6 @@ dist-ssr
 
 # Github 
 .github
+
+# VSCODE
+.vscode

@@ -13,7 +13,7 @@ import type { PaymentStatus } from "../types/Payment";
 import type { SalePurchaseStatus } from "../types/SalePurchaseStatus";
 
 type SaleFilters = {
-  text?: string;
+  search?: string;
   totalValue?: {
     min: number;
     max?: number;
@@ -21,8 +21,8 @@ type SaleFilters = {
   paymentStatus?: PaymentStatus;
   status?: SalePurchaseStatus;
   dateRange: {
-    start: Date;
-    end: Date;
+    start: string;
+    end: string;
   };
 };
 
@@ -171,8 +171,8 @@ class SaleService {
   async list(filters: SaleFilters): Promise<SaleWithPayStatus[]> {
     // 1. Apply indexed filter (period)
     let sales = await saleRepository.listByPeriod(
-      filters.dateRange.start,
-      filters.dateRange.end
+      new Date(filters.dateRange.start),
+      new Date(filters.dateRange.end)
     );
 
     // 2. Filter by status
@@ -186,8 +186,8 @@ class SaleService {
       sales = sales.filter((s) => s.totalValue <= filters.totalValue!.max!);
 
     // 4. Filter by client text search (name, document, phone)
-    if (filters.text?.trim()) {
-      const clients = await clientRepository.searchByText(filters.text);
+    if (filters.search?.trim()) {
+      const clients = await clientRepository.searchByText(filters.search);
 
       if (clients.length > 0) {
         const clientsIds = clients.map((c) => c.id);

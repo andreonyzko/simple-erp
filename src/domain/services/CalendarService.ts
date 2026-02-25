@@ -6,10 +6,10 @@ import type { CalendarEvent } from "../entities/calendar";
 import { calendarRepository } from "../repositories/CalendarRepository";
 
 type CalendarFilters = {
-  text?: string;
+  search?: string;
   dateRange: {
-    start: Date;
-    end: Date;
+    start: string;
+    end: string;
   };
 };
 
@@ -46,14 +46,14 @@ class CalendarService {
   async list(filters: CalendarFilters): Promise<CalendarEvent[]> {
     // 1. Apply indexed filter (period)
     let events = await calendarRepository.listByPeriod(
-      filters.dateRange.start,
-      filters.dateRange.end
+      new Date(filters.dateRange.start),
+      new Date(filters.dateRange.end)
     );
 
     // 2. Filter by text (title search, applied in-memory)
-    if (filters.text?.trim())
+    if (filters.search?.trim())
       events = events.filter((e) =>
-        e.title.toLowerCase().includes(filters.text!.toLowerCase())
+        e.title.toLowerCase().includes(filters.search!.toLowerCase())
       );
 
     return events;

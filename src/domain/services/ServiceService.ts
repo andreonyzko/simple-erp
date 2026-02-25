@@ -3,7 +3,7 @@ import type { Service } from "../entities/service";
 import { serviceRepository } from "../repositories/ServiceRepository";
 
 type ServiceFilters = {
-  text?: string;
+  search?: string;
   price?: {
     min: number;
     max?: number;
@@ -50,8 +50,8 @@ class ServiceService {
 
   async list(filters: ServiceFilters): Promise<Service[]> {
     // 1. Apply indexed filters (text or active)
-    let services = filters.text?.trim()
-      ? await serviceRepository.searchByText(filters.text)
+    let services = filters.search?.trim()
+      ? await serviceRepository.searchByText(filters.search)
       : filters.active !== undefined
       ? await serviceRepository.listByActive(filters.active)
       : await serviceRepository.listAll();

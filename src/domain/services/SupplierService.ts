@@ -6,7 +6,7 @@ import { supplierRepository } from "../repositories/SupplierRepository";
 import { transactionRepository } from "../repositories/TransactionRepository";
 
 type SupplierFilters = {
-  text?: string;
+  search?: string;
   active?: boolean;
   debts?: {
     min: number;
@@ -59,8 +59,8 @@ class SupplierService {
 
   async list(filters: SupplierFilters): Promise<SupplierWithDebt[]> {
     // 1. Apply indexed filters (text search or active status)
-    let suppliers = filters.text?.trim()
-      ? await supplierRepository.searchByText(filters.text!)
+    let suppliers = filters.search?.trim()
+      ? await supplierRepository.searchByText(filters.search!)
       : filters.active !== undefined
       ? await supplierRepository.listByActive(filters.active)
       : await supplierRepository.listAll();

@@ -4,7 +4,7 @@ import { productRepository } from "../repositories/ProductRepository";
 import { supplierRepository } from "../repositories/SupplierRepository";
 
 type ProductFilters = {
-  text?: string;
+  search?: string;
   stock?: "no-control" | "in-stock" | "out-stock";
   cost?: {
     min: number;
@@ -58,8 +58,8 @@ class ProductService {
 
   async list(filters: ProductFilters): Promise<Product[]> {
     // 1. Apply indexed filters (text, active, or stock)
-    let products = filters.text?.trim()
-      ? await productRepository.searchByText(filters.text)
+    let products = filters.search?.trim()
+      ? await productRepository.searchByText(filters.search)
       : filters.active !== undefined
       ? await productRepository.listByActive(filters.active)
       : filters.stock === "out-stock"

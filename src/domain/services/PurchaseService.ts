@@ -12,7 +12,7 @@ import type { PaymentStatus } from "../types/Payment";
 import type { SalePurchaseStatus } from "../types/SalePurchaseStatus";
 
 type PurchaseFilters = {
-  text?: string;
+  search?: string;
   totalValue?: {
     min: number;
     max?: number;
@@ -20,8 +20,8 @@ type PurchaseFilters = {
   paymentStatus?: PaymentStatus;
   status?: SalePurchaseStatus;
   dateRange: {
-    start: Date;
-    end: Date;
+    start: string;
+    end: string;
   };
 };
 
@@ -165,8 +165,8 @@ class PurchaseService {
   async list(filters: PurchaseFilters): Promise<PurchaseWithPayStatus[]> {
     // 1. Apply indexed filter (period)
     let purchases = await purchaseRepository.listByPeriod(
-      filters.dateRange.start,
-      filters.dateRange.end
+      new Date(filters.dateRange.start),
+      new Date(filters.dateRange.end)
     );
 
     // 2. Filter by status
@@ -184,8 +184,8 @@ class PurchaseService {
       );
 
     // 4. Filter by supplier text search (name, document, phone)
-    if (filters.text?.trim()) {
-      const suppliers = await supplierRepository.searchByText(filters.text);
+    if (filters.search?.trim()) {
+      const suppliers = await supplierRepository.searchByText(filters.search);
 
       if (suppliers.length > 0) {
         const suppliersIds = suppliers.map((s) => s.id);

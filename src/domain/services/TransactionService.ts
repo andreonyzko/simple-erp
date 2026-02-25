@@ -5,7 +5,7 @@ import type { TransactionOrigin } from "../types/Transaction";
 import type { TransactionType } from "../types/Transaction";
 
 type TransactionFilters = {
-  text?: string;
+  search?: string;
   origin?: TransactionOrigin;
   type?: TransactionType;
   value?: {
@@ -13,8 +13,8 @@ type TransactionFilters = {
     max?: number;
   };
   dateRange: {
-    start: Date;
-    end: Date;
+    start: string;
+    end: string;
   };
 };
 
@@ -36,8 +36,8 @@ class TransactionService {
   async list(filters: TransactionFilters): Promise<Transaction[]> {
     // 1. Apply indexed filter by period (always present)
     let transactions = await transactionRepository.listByPeriod(
-      filters.dateRange.start,
-      filters.dateRange.end
+      new Date(filters.dateRange.start),
+      new Date(filters.dateRange.end)
     );
 
     // 2. Filter by origin
@@ -55,9 +55,9 @@ class TransactionService {
       transactions = transactions.filter((t) => t.value <= filters.value!.max!);
 
     // 5. Filter by text search (if provided)
-    if (filters.text?.trim())
+    if (filters.search?.trim())
       transactions = transactions.filter((t) =>
-        t.title.toLowerCase().includes(filters.text!.toLowerCase())
+        t.title.toLowerCase().includes(filters.search!.toLowerCase())
       );
 
     return transactions;

@@ -6,7 +6,7 @@ import { saleRepository } from "../repositories/SaleRepository";
 import { transactionRepository } from "../repositories/TransactionRepository";
 
 type ClientFilters = {
-  text?: string;
+  search?: string;
   active?: boolean;
   debts?: {
     min: number;
@@ -59,8 +59,8 @@ class ClientService {
 
   async list(filters: ClientFilters): Promise<ClientWithDebt[]> {
     // 1. Apply indexed filters (text search or active status)
-    let clients = filters.text?.trim()
-      ? await clientRepository.searchByText(filters.text)
+    let clients = filters.search?.trim()
+      ? await clientRepository.searchByText(filters.search)
       : filters.active !== undefined
       ? await clientRepository.listByActive(filters.active)
       : await clientRepository.listAll();

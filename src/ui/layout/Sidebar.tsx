@@ -31,7 +31,7 @@ export default function Sidebar() {
 
       <aside
         className={clsx(
-          "bg-slate-900 text-slate-300 flex flex-col z-40 transition-all duration-200",
+          "bg-slate-900 text-slate-300 flex flex-col z-40 transition-all duration-200 w-64",
           "fixed inset-y-0 left-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
           "md:static md:translate-x-0",
@@ -53,6 +53,7 @@ export default function Sidebar() {
           <button
             onClick={toggleCollapsed}
             className="hidden md:block p-2 rounded hover:bg-slate-800"
+            aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
           >
             <ChevronLeft
               size={18}

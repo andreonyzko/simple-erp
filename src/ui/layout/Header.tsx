@@ -14,7 +14,8 @@ export default function Header() {
 
   return (
     <header className="h-14 bg-slate-900 border-b flex items-center justify-between px-4 gap-4 md:px-6 md:bg-white">
-      <button onClick={openMobile} className="md:hidden p-2 rounded text-white">
+      <button onClick={openMobile} className="md:hidden p-2 rounded text-white"
+      aria-label="Abrir menu">
         <Menu size={20} />
       </button>
       <h1 className="text-lg font-semibold text-white md:text-slate-800 ">

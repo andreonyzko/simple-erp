@@ -24,6 +24,7 @@ import ServiceCreatePage from "../pages/services/ServiceCreatePage";
 import ServiceEditPage from "../pages/services/ServiceEditPage";
 import TransactionsListPage from "../pages/transactions/TransactionsListPage";
 import TransactionCreatePage from "../pages/transactions/TransactionCreatePage";
+import type { RouteHandle } from "./types";
 
 export const router = createBrowserRouter([
   {
@@ -33,122 +34,122 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardPage />,
-        handle: { title: "Dashboard" },
+        handle: { title: "Dashboard" } satisfies RouteHandle,
       },
       {
         path: "agenda",
         element: <CalendarListPage />,
-        handle: { title: "Agenda" },
+        handle: { title: "Agenda" } satisfies RouteHandle,
       },
       {
         path: "agenda/cadastrar",
         element: <CalendarCreatePage />,
-        handle: { title: "Cadastro de evento" },
+        handle: { title: "Cadastro de evento" } satisfies RouteHandle,
       },
       {
         path: "agenda/:id/editar",
         element: <CalendarEditPage />,
-        handle: { title: "Edição evento" },
+        handle: { title: "Edição evento" } satisfies RouteHandle,
       },
       {
         path: "vendas",
         element: <SalesListPage />,
-        handle: { title: "Vendas" },
+        handle: { title: "Vendas" } satisfies RouteHandle,
       },
       {
         path: "vendas/cadastrar",
         element: <SaleCreatePage />,
-        handle: { title: "Cadastro de venda" },
+        handle: { title: "Cadastro de venda" } satisfies RouteHandle,
       },
       {
         path: "vendas/:id/editar",
         element: <SaleEditPage />,
-        handle: { title: "Edição de venda" },
+        handle: { title: "Edição de venda" } satisfies RouteHandle,
       },
       {
         path: "compras",
         element: <PurchasesListPage />,
-        handle: { title: "Compras" },
+        handle: { title: "Compras" } satisfies RouteHandle,
       },
       {
         path: "compras/cadastrar",
         element: <PurchaseCreatePage />,
-        handle: { title: "Cadastro de compra" },
+        handle: { title: "Cadastro de compra" } satisfies RouteHandle,
       },
       {
         path: "compras/:id/editar",
         element: <PurchaseEditPage />,
-        handle: { title: "Edição de compra" },
+        handle: { title: "Edição de compra" } satisfies RouteHandle,
       },
       {
         path: "clientes",
         element: <ClientsListPage />,
-        handle: { title: "Clientes" },
+        handle: { title: "Clientes" } satisfies RouteHandle,
       },
       {
         path: "clientes/cadastrar",
         element: <ClientCreatePage />,
-        handle: { title: "Cadastro de cliente" },
+        handle: { title: "Cadastro de cliente" } satisfies RouteHandle,
       },
       {
         path: "clientes/:id/editar",
         element: <ClientEditPage />,
-        handle: { title: "Edição de cliente" },
+        handle: { title: "Edição de cliente" } satisfies RouteHandle,
       },
       {
         path: "fornecedores",
         element: <SuppliersListPage />,
-        handle: { title: "Fornecedores" },
+        handle: { title: "Fornecedores" } satisfies RouteHandle,
       },
       {
         path: "fornecedores/cadastrar",
         element: <SupplierCreatePage />,
-        handle: { title: "Cadastro de fornecedor" },
+        handle: { title: "Cadastro de fornecedor" } satisfies RouteHandle,
       },
       {
         path: "fornecedores/:id/editar",
         element: <SupplierEditPage />,
-        handle: { title: "Edição de fornecedor" },
+        handle: { title: "Edição de fornecedor" } satisfies RouteHandle,
       },
       {
         path: "produtos",
         element: <ProductsListPage />,
-        handle: { title: "Produtos" },
+        handle: { title: "Produtos" } satisfies RouteHandle,
       },
       {
         path: "produtos/cadastrar",
         element: <ProductCreatePage />,
-        handle: { title: "Cadastro de produto" },
+        handle: { title: "Cadastro de produto" } satisfies RouteHandle,
       },
       {
         path: "produtos/:id/editar",
         element: <ProductEditPage />,
-        handle: { title: "Edição de produto" },
+        handle: { title: "Edição de produto" } satisfies RouteHandle,
       },
       {
         path: "servicos",
         element: <ServicesListPage />,
-        handle: { title: "Serviços" },
+        handle: { title: "Serviços" } satisfies RouteHandle,
       },
       {
         path: "servicos/cadastrar",
         element: <ServiceCreatePage />,
-        handle: { title: "Cadastro de serviço" },
+        handle: { title: "Cadastro de serviço" } satisfies RouteHandle,
       },
       {
         path: "servicos/:id/editar",
         element: <ServiceEditPage />,
-        handle: { title: "Edição de serviço" },
+        handle: { title: "Edição de serviço" } satisfies RouteHandle,
       },
       {
         path: "financeiro/extrato",
         element: <TransactionsListPage />,
-        handle: { title: "Extrato financeiro" },
+        handle: { title: "Extrato financeiro" } satisfies RouteHandle,
       },
       {
         path: "financeiro/cadastrar",
         element: <TransactionCreatePage />,
-        handle: { title: "Cadastro de movimentação financeiro" },
+        handle: { title: "Cadastro de movimentação financeiro" } satisfies RouteHandle,
       },
     ],
   },

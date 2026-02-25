@@ -1,324 +1,395 @@
-# Busca e Filtros – Sistema ERP PWA
+# SEARCH_FILTERS.md  
+## Busca e Filtros – Sistema ERP PWA
 
-## 1. Objetivo deste documento
+---
 
-Este documento define **de forma normativa** como funcionam as buscas e os filtros no Sistema ERP PWA.
+# 1. Objetivo deste documento
+
+Este documento define de forma normativa como funcionam as buscas e os filtros no Sistema ERP PWA.
 
 Ele estabelece:
 
-* O comportamento da **barra única de busca textual**
-* Os **campos considerados** na busca por entidade
-* Os **filtros estruturados disponíveis** por entidade
-* A separação clara entre **busca**, **filtros** e **dados derivados**
+- O comportamento da barra única de busca textual
+- Os campos considerados na busca por entidade
+- Os filtros estruturados disponíveis por entidade
+- A separação clara entre busca, filtros e dados derivados
+- A representação obrigatória desses estados na URL
 
 Este documento serve como contrato entre:
 
-* UI
-* Services
-* Repositories
+UI  
+Routes (Data Router)  
+Services  
+Repositories  
 
 ---
 
-## 2. Conceitos fundamentais
+# 2. Princípios fundamentais
 
-### 2.1 Busca textual (Search)
+## 2.1 URL como fonte da verdade
 
-* Existe **uma única barra de busca** por listagem
-* A busca é **exclusivamente textual**
-* O texto digitado é aplicado apenas a **campos previamente definidos**
-* A busca **reduz o universo inicial de dados**, mas não substitui filtros
+Busca e filtros são representados obrigatoriamente como query parameters na URL.
 
-A busca nunca executa cálculos derivados.
+Exemplo:
+
+/sales?search=joao&status=open&from=2024-01-01&to=2024-01-31
+
+A alteração da URL:
+
+- Dispara automaticamente o loader da rota
+- Reexecuta o fluxo de busca
+- Atualiza a listagem
+- Mantém compatibilidade com back/forward
+- Permite deep linking
+
+Não é permitido manter estado duplicado entre UI e URL.
 
 ---
 
-### 2.2 Filtros estruturados (Filters)
+## 2.2 Busca textual (Search)
 
-* Filtros são aplicados por meio de um formulário separado
-* Cada filtro possui um input específico
-* Filtros são **estruturados** (booleanos, enums, ranges, datas)
-* Filtros refinam o resultado da busca
+- Existe uma única barra de busca por listagem
+- A busca é exclusivamente textual
+- O texto digitado é aplicado apenas a campos previamente definidos
+- A busca reduz o universo inicial de dados
+- A busca nunca executa cálculos derivados
+
+A interpretação da busca ocorre no loader da rota.
 
 ---
 
-### 2.3 Ordem de aplicação
+## 2.3 Filtros estruturados (Filters)
 
-A ordem de aplicação é **obrigatória**:
+- Filtros são aplicados por meio de inputs específicos
+- Filtros são estruturados (booleanos, enums, ranges, datas)
+- Filtros refinam o resultado da busca
+- Filtros alteram query parameters
+- Aplicação efetiva ocorre no loader
+
+Filtros nunca são armazenados em estado local isolado.
+
+---
+
+## 2.4 Ordem de aplicação
+
+A ordem de aplicação é obrigatória:
 
 1. Busca textual (repository / índice)
 2. Filtros estruturados simples (repository / índice)
 3. Filtros derivados (service / memória)
 
+Essa ordem não pode ser alterada.
+
 ---
 
-## 3. Agenda (CalendarEvent)
+# 3. Responsabilidades por camada
 
-### Busca
+## 3.1 UI
+
+Responsável por:
+
+- Renderizar barra de busca
+- Renderizar painel de filtros
+- Atualizar query parameters
+- Exibir resultados retornados pelo loader
+
+A UI:
+
+- Não executa busca diretamente
+- Não aplica filtros manualmente
+- Não calcula dados derivados
+- Não chama services diretamente
+
+---
+
+## 3.2 Route (Loader)
+
+Responsável por:
+
+- Ler query parameters
+- Validar parâmetros
+- Chamar o service com os filtros extraídos
+- Retornar o resultado final para a UI
+
+O loader não implementa regras de negócio.
+
+---
+
+## 3.3 Service
+
+Responsável por:
+
+- Aplicar regras derivadas
+- Calcular dados financeiros
+- Aplicar filtros baseados em dados derivados
+- Garantir consistência das regras
+
+---
+
+## 3.4 Repository
+
+Responsável por:
+
+- Executar consultas indexadas
+- Aplicar filtros simples
+- Retornar dados persistidos
+
+Repositories nunca aplicam filtros derivados.
+
+---
+
+# 4. Agenda (CalendarEvent)
+
+## Busca
 
 Campos considerados:
 
-* title
+- title
 
-### Filtros
+## Filtros
 
-* Período:
+- Período:
+  - data inicial (from)
+  - data final (to)
 
-  * data inicial
-  * data final
+Query example:
+
+/calendar?from=2024-01-01&to=2024-01-31
 
 ---
 
-## 4. Clientes (Client)
+# 5. Clientes (Client)
 
-### Busca
+## Busca
 
 Campos considerados:
 
-* name
-* document
-* phone
+- name
+- document
+- phone
 
-### Filtros
+## Filtros
 
-* Status:
+- Status:
+  - active=true
+  - active=false
 
-  * ativo
-  * desativado
+- Situação financeira:
+  - debtStatus=with_debt
+  - debtStatus=clear
 
-* Situação financeira:
+- Dívida:
+  - minDebt
+  - maxDebt
 
-  * com dívidas
-  * em dia
+## Observações
 
-* Dívida:
-
-  * valor mínimo
-  * valor máximo
-
-### Observações
-
-* Dívida é um **dado derivado** (sales + transactions)
-* Filtros financeiros são aplicados exclusivamente no service
+- Dívida é dado derivado (sales + transactions)
+- Filtros financeiros são aplicados exclusivamente no service
+- Repositories não calculam dívida
 
 ---
 
-## 5. Fornecedores (Supplier)
+# 6. Fornecedores (Supplier)
 
-### Busca
+## Busca
 
 Campos considerados:
 
-* name
-* document
-* phone
+- name
+- document
+- phone
 
-### Filtros
+## Filtros
 
-* Status:
+- Status:
+  - active=true
+  - active=false
 
-  * ativo
-  * desativado
+- Situação financeira:
+  - debtStatus=owing
+  - debtStatus=clear
 
-* Situação financeira:
+- Dívida:
+  - minDebt
+  - maxDebt
 
-  * devendo
-  * em dia
+## Observações
 
-* Dívida:
-
-  * valor mínimo
-  * valor máximo
-
-### Observações
-
-* Dívida é um **dado derivado** (purchases + transactions)
-* Filtros financeiros são aplicados exclusivamente no service
+- Dívida é dado derivado (purchases + transactions)
+- Filtros financeiros são aplicados exclusivamente no service
 
 ---
 
-## 6. Produtos (Product)
+# 7. Produtos (Product)
 
-### Busca
+## Busca
 
 Campos considerados:
 
-* name
+- name
 
-### Filtros
+## Filtros
 
-* Controle de estoque:
+- Controle de estoque:
+  - stockControl=true
+  - stockControl=false
 
-  * estoque não controlado
-  * em estoque
-  * sem estoque
+- Estoque:
+  - minStock
+  - maxStock
 
-* Estoque:
+- Custo:
+  - minCost
+  - maxCost
 
-  * quantidade mínima
-  * quantidade máxima
+- Valor de venda:
+  - minSellPrice
+  - maxSellPrice
 
-* Custo:
-
-  * valor mínimo
-  * valor máximo
-
-* Valor de venda:
-
-  * valor mínimo
-  * valor máximo
-
-* Status:
-
-  * ativo
-  * desativado
+- Status:
+  - active=true
+  - active=false
 
 ---
 
-## 7. Serviços (Service)
+# 8. Serviços (Service)
 
-### Busca
+## Busca
 
 Campos considerados:
 
-* name
+- name
 
-### Filtros
+## Filtros
 
-* Preço:
+- Preço:
+  - minPrice
+  - maxPrice
 
-  * valor mínimo
-  * valor máximo
-
-* Status:
-
-  * ativo
-  * desativado
+- Status:
+  - active=true
+  - active=false
 
 ---
 
-## 8. Vendas (Sale)
+# 9. Vendas (Sale)
 
-### Busca
+## Busca
 
 Campos considerados:
 
-* nome do cliente
+- nome do cliente
 
-### Filtros
+## Filtros
 
-* Valor total:
+- Valor total:
+  - minTotal
+  - maxTotal
 
-  * mínimo
-  * máximo
+- Status da venda:
+  - status=open
+  - status=closed
+  - status=canceled
 
-* Status da venda:
+- Período:
+  - from
+  - to
 
-  * open
-  * closed
-  * canceled
+- Status de pagamento:
+  - paymentStatus=pending
+  - paymentStatus=partial
+  - paymentStatus=paid
 
-* Período:
+## Observações
 
-  * data inicial
-  * data final
-
-* Status de pagamento:
-
-  * pending
-  * partial
-  * paid
-
-### Observações
-
-* Busca por nome do cliente ocorre via relacionamento Client → Sale
-* Vendas sem `clientId` não participam da busca por nome de cliente
-* Status de pagamento é um **dado derivado**, calculado no service
+- Busca por nome do cliente ocorre via relacionamento Client → Sale
+- Vendas sem clientId não participam da busca por nome de cliente
+- Status de pagamento é dado derivado
+- Filtro de paymentStatus é aplicado exclusivamente no service
 
 ---
 
-## 9. Compras (Purchase)
+# 10. Compras (Purchase)
 
-### Busca
+## Busca
 
 Campos considerados:
 
-* nome do fornecedor
+- nome do fornecedor
 
-### Filtros
+## Filtros
 
-* Valor total:
+- Valor total:
+  - minTotal
+  - maxTotal
 
-  * mínimo
-  * máximo
+- Status da compra:
+  - status=open
+  - status=closed
+  - status=canceled
 
-* Status da compra:
+- Período:
+  - from
+  - to
 
-  * open
-  * closed
-  * canceled
+- Status de pagamento:
+  - paymentStatus=pending
+  - paymentStatus=partial
+  - paymentStatus=paid
 
-* Período:
+## Observações
 
-  * data inicial
-  * data final
-
-* Status de pagamento:
-
-  * pending
-  * partial
-  * paid
-
-### Observações
-
-* Busca por nome do fornecedor ocorre via relacionamento Supplier → Purchase
-* Status de pagamento é um **dado derivado**, calculado no service
+- Status de pagamento é dado derivado
+- Aplicação ocorre no service
 
 ---
 
-## 10. Transações (Transaction)
+# 11. Transações (Transaction)
 
-### Busca
+## Busca
 
 Campos considerados:
 
-* title
+- title
 
-### Filtros
+## Filtros
 
-* Origem:
+- Origem:
+  - origin=sale
+  - origin=purchase
+  - origin=manual
 
-  * sale
-  * purchase
-  * manual
+- Tipo:
+  - type=in
+  - type=out
 
-* Tipo:
+- Valor:
+  - minValue
+  - maxValue
 
-  * in
-  * out
-
-* Valor:
-
-  * mínimo
-  * máximo
-
-* Período:
-
-  * data inicial
-  * data final
+- Período:
+  - from
+  - to
 
 ---
 
-## 11. Considerações técnicas
+# 12. Considerações técnicas
 
-* Campos derivados nunca são indexados
-* Busca textual utiliza índices simples quando possível
-* Filtros por range utilizam índices numéricos
-* Combinações complexas são resolvidas no service
+- Campos derivados nunca são indexados
+- Busca textual utiliza índices simples quando possível
+- Filtros por range utilizam índices numéricos
+- Combinações complexas são resolvidas no service
+- Loader nunca implementa regra de negócio
+- UI nunca executa lógica de filtragem
 
 ---
 
-## 12. Regra final
+# 13. Regra final
 
-> A busca **reduz o conjunto de dados**. Os filtros **refinam o resultado**.
-
-Qualquer cálculo ou decisão derivada pertence exclusivamente aos services.
+A busca reduz o conjunto inicial de dados.  
+Os filtros refinam o resultado.  
+Dados derivados são responsabilidade exclusiva do service.  
+A URL representa o estado da listagem.  
+O loader executa o fluxo.  
+A UI apenas exibe.

@@ -1,6 +1,9 @@
-# Guia de Desenvolvimento – Sistema ERP PWA
+# DEVELOPMENT_GUIDE.md  
+## Guia de Desenvolvimento – Sistema ERP PWA
 
-## 1. Objetivo deste documento
+---
+
+# 1. Objetivo deste documento
 
 Este documento define **como desenvolver no Sistema ERP PWA sem violar o domínio, a arquitetura e as regras de negócio**.
 
@@ -10,68 +13,89 @@ Ele existe para:
 - Padronizar decisões técnicas
 - Evitar violações arquiteturais
 - Garantir consistência de regras
+- Formalizar o fluxo com React Router Data Mode
 
 Este guia é **normativo**. Quebras deliberadas das regras aqui descritas são consideradas erros de implementação.
 
 ---
 
-## 2. Princípios fundamentais
+# 2. Princípios fundamentais
 
-### 2.1 O domínio é soberano
+## 2.1 O domínio é soberano
 
 - Todas as regras de negócio estão definidas em `DOMAIN.md`
 - Nenhuma decisão de negócio pode ser tomada fora dos services
 - Implementações técnicas devem se adaptar ao domínio
+- Routes nunca contêm regras de negócio
 
 Em caso de dúvida, **o domínio sempre vence**.
 
 ---
 
-### 2.2 A arquitetura deve ser respeitada
+## 2.2 A arquitetura deve ser respeitada
 
 O fluxo arquitetural é obrigatório:
 
-```
-UI → Services → Repositories → Dexie
-```
+UI  
+↓  
+Route (loader/action)  
+↓  
+Service  
+↓  
+Repository  
+↓  
+Dexie  
 
 Quebras desse fluxo **não são permitidas**.
 
 ---
 
-## 3. Organização do código
+# 3. Organização do código
 
-```txt
-src/
- ├─ domain/
- │   ├─ entities/
- │   ├─ types/
- │   ├─ services/
- │   └─ repositories/
- ├─ infra/
- │   └─ database/
- │       └─ dexie.ts
- └─ ui/
-     ├─ pages/
-     └─ components/
-```
+src/  
+ ├─ domain/  
+ │   ├─ entities/  
+ │   ├─ types/  
+ │   ├─ services/  
+ │   └─ repositories/  
+ │  
+ ├─ infra/  
+ │   └─ database/  
+ │       └─ dexie.ts  
+ │  
+ └─ ui/  
+     ├─ layout/  
+     ├─ components/  
+     ├─ hooks/  
+     ├─ pages/  
+     ├─ routes/  
+     └─ styles/  
 
-A estrutura reflete diretamente as camadas arquiteturais do sistema.
+Observações:
+
+- A pasta `routes` contém loaders e actions.
+- Pages são componentes visuais.
+- UI não contém lógica de negócio.
+- Services não conhecem UI nem rotas.
 
 ---
 
-## 4. Regras por camada
+# 4. Regras por camada
 
-### 4.1 UI (Pages / Components)
+---
+
+## 4.1 UI (Pages / Components)
 
 A UI é **burra por definição**.
 
 Pode:
 
 - Coletar dados de entrada
-- Exibir dados
-- Controlar estado visual
-- Chamar services
+- Exibir dados retornados pelo loader
+- Alterar query parameters
+- Renderizar estado visual
+- Utilizar `<Form>` ou `fetcher`
+- Utilizar `useNavigation` para estados visuais
 
 Não pode:
 
@@ -80,12 +104,37 @@ Não pode:
 - Calcular status derivados (ex: paymentStatus)
 - Acessar Dexie
 - Acessar repositories diretamente
+- Chamar services diretamente para mutações
 
 Qualquer lógica além de formatação e controle visual é proibida.
 
 ---
 
-### 4.2 Services
+## 4.2 Routes (Data Router Layer)
+
+Routes são responsáveis por:
+
+- Declarar `loader`
+- Declarar `action`
+- Interpretar a URL
+- Extrair query parameters
+- Chamar services
+- Orquestrar fluxo de dados
+- Declarar `errorElement`
+- Permitir revalidação automática
+
+Routes:
+
+- Não implementam regras de negócio
+- Não acessam Dexie
+- Não acessam repositories diretamente
+- Não contêm lógica financeira
+
+Toda mutação de dados deve ocorrer via `action`.
+
+---
+
+## 4.3 Services
 
 Services são o **coração do sistema**.
 
@@ -100,39 +149,40 @@ Responsabilidades obrigatórias:
 
 Regras importantes:
 
-- Services **importam diretamente** repositories singleton
+- Services importam diretamente repositories singleton
 - Services não recebem repositories por parâmetro
-- Um service não deve conhecer UI nem Dexie
-- Funções devem ser pequenas e explícitas
+- Services não conhecem UI
+- Services não conhecem rotas
+- Services não conhecem Dexie
 
-Toda regra de negócio **deve** estar aqui.
+Toda regra de negócio deve estar aqui.
 
 ---
 
-### 4.3 Repositories
+## 4.4 Repositories
 
-Repositories são responsáveis **exclusivamente por persistência e consulta**.
+Repositories são responsáveis exclusivamente por persistência e consulta.
 
 Podem:
 
 - Criar registros
 - Ler registros
 - Atualizar campos permitidos
-- Listar e filtrar dados
+- Listar e filtrar dados persistidos
 
 Não podem:
 
 - Validar regras de negócio
-- Calcular valores
+- Calcular valores financeiros
 - Criar Transactions
 - Decidir estados
 - Aplicar regras derivadas
 
-Repositories devem ser **determinísticos e previsíveis**.
+Repositories devem ser determinísticos e previsíveis.
 
 ---
 
-### 4.4 Infraestrutura (Dexie)
+## 4.5 Infraestrutura (Dexie)
 
 Responsável apenas por:
 
@@ -144,12 +194,89 @@ Nunca deve:
 
 - Conter regras de negócio
 - Conhecer entidades do domínio
+- Interferir no fluxo de rotas
 
 ---
 
-## 5. Entities vs Types
+# 5. Regras específicas do Data Router
 
-### Entities
+## 5.1 Leitura de dados
+
+Toda leitura de dados deve ocorrer via `loader`.
+
+Exemplo correto:
+
+- Loader extrai filtros da URL
+- Loader chama service
+- Service aplica regras
+- Repository consulta Dexie
+
+A UI nunca deve buscar dados diretamente.
+
+---
+
+## 5.2 Mutações
+
+Toda mutação deve ocorrer via `action`.
+
+Proibido:
+
+- UI chamar service diretamente para criar, editar ou cancelar
+
+Obrigatório:
+
+- `<Form method="post">`
+ou
+- `fetcher.submit()`
+
+A action chama o service.
+O service executa regras.
+O router revalida automaticamente.
+
+---
+
+## 5.3 Query Parameters
+
+Busca e filtros devem ser representados como query parameters.
+
+Exemplo:
+
+/sales?search=joao&status=open
+
+A alteração da URL dispara automaticamente o loader.
+
+Não é permitido manter estado duplicado entre UI e URL.
+
+---
+
+## 5.4 Loading
+
+Estados de navegação devem utilizar:
+
+- `useNavigation`
+- `fetcher.state`
+
+Não é permitido:
+
+- Criar estado manual de loading para dados de rota
+- Controlar manualmente revalidação após action
+
+---
+
+## 5.5 Erros
+
+Separação obrigatória:
+
+- Erro técnico → tratado por `errorElement`
+- Erro de negócio → retornado pela action e exibido na UI
+
+Nunca misturar erros técnicos com regras de negócio.
+
+---
+
+# 6. Entities vs Types
+
+## Entities
 
 - Representam conceitos reais do negócio
 - Possuem identidade
@@ -164,7 +291,7 @@ Exemplos:
 
 ---
 
-### Types
+## Types
 
 - Estruturas auxiliares
 - Não possuem identidade
@@ -173,12 +300,12 @@ Exemplos:
 Exemplos:
 
 - ComercialItem
-- Enums
 - Filtros
+- Enums
 
 ---
 
-## 6. Regras financeiras e histórico
+# 7. Regras financeiras e histórico
 
 - Registros financeiros nunca são editados
 - Registros financeiros nunca são removidos
@@ -189,9 +316,9 @@ Quebrar essas regras invalida o modelo financeiro.
 
 ---
 
-## 7. Dados derivados
+# 8. Dados derivados
 
-Dados derivados **nunca são persistidos**.
+Dados derivados nunca são persistidos.
 
 Exemplos:
 
@@ -204,12 +331,13 @@ Regras:
 - Devem ser calculados exclusivamente nos services
 - Nunca podem ser alterados manualmente
 - Nunca podem ser calculados na UI
+- Nunca devem ser indexados
 
 ---
 
-## 8. Estados e transições
+# 9. Estados e transições
 
-As entidades **Sale** e **Purchase** seguem uma máquina de estados explícita.
+As entidades Sale e Purchase seguem máquina de estados explícita.
 
 Estados:
 
@@ -229,21 +357,23 @@ Transições proibidas:
 - canceled → open
 - canceled → closed
 
-Qualquer tentativa de transição inválida deve resultar em erro.
+Qualquer tentativa inválida deve resultar em erro no service.
 
 ---
 
-## 9. Datas
+# 10. Datas
 
 - Sale, Purchase e CalendarEvent podem ter datas passadas ou futuras
 - Transaction não pode ter data futura
-- Campos `createdAt` nunca podem ser alterados
+- `createdAt` nunca pode ser alterado
+
+Validação deve ocorrer nos services.
 
 ---
 
-## 10. Padrões de código
+# 11. Padrões de código
 
-### 10.1 TypeScript
+## 11.1 TypeScript
 
 - Usar `interface` para entities
 - Usar `type` para unions e enums
@@ -251,7 +381,7 @@ Qualquer tentativa de transição inválida deve resultar em erro.
 
 ---
 
-### 10.2 Nomenclatura
+## 11.2 Nomenclatura
 
 - camelCase para variáveis
 - PascalCase para entities e services
@@ -259,58 +389,38 @@ Qualquer tentativa de transição inválida deve resultar em erro.
 
 ---
 
-### 10.3 Comentários
+## 11.3 Comentários
 
-Comentários devem ser:
+Comentários devem:
 
-- **Curtos e ricos** - Máximo valor em mínimo espaço
-- **Explicar "porquê", não "como"** - Código limpo se auto-explica
-- **Destacar regras críticas** - Imutabilidade, soft-delete, machine state
-- **Evitar redundância** - Não comentar código óbvio (ex: `// Create`)
-
-**Exemplos corretos:**
-
-```typescript
-// ✅ Explica propósito especial
-// Toggle active/inactive status (soft-delete)
-async active(id: number, active: boolean) { ... }
-
-// ✅ Destaca regra CRÍTICA
-// Transactions are IMMUTABLE (no update or delete methods)
-
-// ✅ Numera passos complexos
-// 1. Apply indexed filters (text or active)
-// 2. Calculate derived data (paymentStatus)
-// 3. Filter by derived data (applied in-memory)
-```
-
-**Exemplos incorretos:**
-
-```typescript
-// ❌ Redundante
-// Create
-async create(data: CreateDTO) { ... }
-
-// ❌ Apenas repete o código
-// Update active field
-async active(id: number, active: boolean) { ... }
-```
+- Explicar "porquê", não "como"
+- Destacar regras críticas
+- Evitar redundância
+- Manter clareza conceitual
 
 ---
 
-## 11. Commits e versionamento
+# 12. Commits e versionamento
 
 Padrão sugerido:
 
-- `feat:` nova funcionalidade
-- `fix:` correção
-- `refactor:` refatoração
-- `docs:` documentação
+- feat: nova funcionalidade
+- fix: correção
+- refactor: refatoração
+- docs: documentação
 
 ---
 
-## 12. Regra final
+# 13. Regra final
 
-> **Se uma decisão parece ambígua, consulte o DOMAIN.md.**
+Se uma decisão parece ambígua:
 
-O domínio é a autoridade máxima do sistema.
+1. Consulte DOMAIN.md
+2. Consulte ARCHITECTURE.md
+3. Verifique se está respeitando o fluxo oficial
+
+O domínio é soberano.  
+A arquitetura é obrigatória.  
+O Router orquestra o fluxo.  
+A UI é declarativa.  
+Os services decidem as regras.

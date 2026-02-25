@@ -1,4 +1,4 @@
-import { db } from "../../infra/database";
+import { db } from "@/infra/database";
 import type { CreateProductDTO, UpdateProductDTO } from "../dtos/ProductDTO";
 import type { Product } from "../entities/product";
 

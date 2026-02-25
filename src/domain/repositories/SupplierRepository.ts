@@ -1,4 +1,4 @@
-import { db } from "../../infra/database";
+import { db } from "@/infra/database";
 import type { CreateSupplierDTO, UpdateSupplierDTO } from "../dtos/PersonDTO";
 import type { Supplier } from "../entities/person";
 

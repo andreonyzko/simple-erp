@@ -1,4 +1,4 @@
-import { db } from "../../infra/database";
+import { db } from "@/infra/database";
 import type {
   CreateCalendarEventDTO,
   UpdateCalendarEventDTO,

@@ -1,4 +1,4 @@
-import { db } from "../../infra/database";
+import { db } from "@/infra/database";
 import type { CreateServiceDTO, UpdateServiceDTO } from "../dtos/ServiceDTO";
 import type { Service } from "../entities/service";
 

@@ -1,4 +1,4 @@
-import { db } from "../../infra/database";
+import { db } from "@/infra/database";
 import type { CreateTransactionDTO } from "../dtos/TransactionDTO";
 import type { Transaction } from "../entities/transaction";
 import type { TransactionOrigin, TransactionType } from "../types/Transaction";

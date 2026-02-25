@@ -1,4 +1,4 @@
-import { db } from "../../infra/database";
+import { db } from "@/infra/database";
 import type { CreateSaleDTO, UpdateSaleDTO } from "../dtos/SaleDTO";
 import type { Sale } from "../entities/sale";
 import type { SalePurchaseStatus } from "../types/SalePurchaseStatus";

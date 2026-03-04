@@ -1,3 +1,3 @@
 export type RouteHandle = {
-    title?: string,
+    title?: Array<string>,
 }

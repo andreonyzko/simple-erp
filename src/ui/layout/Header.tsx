@@ -1,6 +1,6 @@
 import { useMatches } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
-import { ChevronRight, House, Menu } from "lucide-react";
+import { ChevronRight, Menu } from "lucide-react";
 import type { RouteHandle } from "../routes/types";
 
 export default function Header() {
@@ -20,12 +20,14 @@ export default function Header() {
       >
         <Menu size={20} />
       </button>
-      <h1 className="flex items-center gap-2 text-sm text-white">
+      <h1 className="flex items-center gap-1 text-sm text-white">
         {titles.map((title, index) => (
-          <>
+          <span key={index} className="flex items-center gap-1">
             {title}
-            {index !== (titles.length -1) && <ChevronRight size={14}/>} 
-          </>
+            {index !== titles.length - 1 && (
+              <ChevronRight size={14} key={index} />
+            )}
+          </span>
         ))}
       </h1>
     </header>

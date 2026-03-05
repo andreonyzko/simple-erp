@@ -4,18 +4,19 @@ import { Button } from "./shadcn/button";
 import { Link } from "react-router";
 
 type PageToolBarProps = {
-  title: string
+  title: string;
+  pageDescription: string;
   searchValue?: string;
   onSearchChange?(value: string): void;
   searchPlaceholder?: string;
   createPath?: string;
   createLabel?: string;
   onToggleFilters?(): void;
-  showFilters?: boolean;
 };
 
 export default function PageToolBar({
   title,
+  pageDescription,
   searchValue = "",
   onSearchChange,
   searchPlaceholder = "Buscar...",
@@ -24,45 +25,67 @@ export default function PageToolBar({
   onToggleFilters,
 }: PageToolBarProps) {
   return (
-    <div className="flex flex-col flex-wrap gap-2 md:flex-row md:justify-between">
-      <div className="w-full flex flex-col gap-1 py-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-sm text-slate-500">Lorem ipsum, dolor sit amet</p>
-      </div>
-      <div className="flex-1 flex gap-2">
-        {onSearchChange && (
-          <div className="relative flex-1 ">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
-            <Input
-              type="search"
-              placeholder={searchPlaceholder}
-              value={searchValue}
-              onChange={e => onSearchChange(e.target.value)}
-              className="pl-9"
-            />
+    <div className="sticky top-0 z-20 px-4 py-4 md:px-6">
+      <div className="flex flex-col gap-4">
+        {/* Título e Descrição */}
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">{title}</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {pageDescription}
+            </p>
           </div>
-        )}
 
-        {onToggleFilters && (
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={onToggleFilters}
-            aria-label="Filtros"
-          >
-            <SlidersHorizontal className="h-4 w-4"/>
-          </Button>
-        )}
+          {/* Botão Novo - Desktop */}
+          {createPath && (
+            <Button asChild className="hidden md:flex">
+              <Link to={createPath}>
+                <Plus className="mr-2 h-4 w-4" />
+                {createLabel}
+              </Link>
+            </Button>
+          )}
+        </div>
+
+        {/* Barra de Busca e Filtros */}
+        <div className="flex flex-col gap-2 md:flex-row">
+          {onSearchChange && (
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={searchPlaceholder}
+                value={searchValue}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            {onToggleFilters && (
+              <Button
+                variant="outline"
+                onClick={onToggleFilters}
+                className="flex-1"
+              >
+                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                <span className="md:inline">Filtros</span>
+              </Button>
+            )}
+
+            {/* Botão Novo - Mobile */}
+            {createPath && (
+              <Button asChild className="md:hidden flex-1">
+                <Link to={createPath}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {createLabel}
+                </Link>
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
-
-      {createPath && (
-        <Button asChild>
-          <Link to={createPath}>
-            <Plus className="mr-2 h-4 w-4"/>
-            {createLabel}
-          </Link>
-        </Button>
-      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { FileQuestion, type LucideIcon } from "lucide-react";
+
 type EmptyStateProps = {
   title?: string;
   message?: string;
@@ -11,16 +12,18 @@ export default function EmptyState({
   Icon,
 }: EmptyStateProps) {
   return (
-    <div className="flex-1 flex flex-col justify-center items-center">
+    <div className="flex-1 flex flex-col justify-center items-center px-4 py-12">
       <div className="mb-4 text-muted-foreground">
-          {Icon ? (
-            <Icon className="h-16 w-16" />
-          ) : (
-            <FileQuestion className="h-16 w-16" />
-          )}
-        </div>
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-        <p className="text-sm text-muted-foreground max-w-sm">{message}</p>
+        {Icon ? (
+          <Icon className="h-16 w-16" />
+        ) : (
+          <FileQuestion className="h-16 w-16" />
+        )}
+      </div>
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <p className="text-sm text-muted-foreground text-center max-w-sm">
+        {message}
+      </p>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import type { PropsWithChildren } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./shadcn/card";
 import { Button } from "./shadcn/button";
 import { X } from "lucide-react";
 import clsx from "clsx";
@@ -20,18 +19,23 @@ export default function FilterPanel({
 }: PropsWithChildren<FilterPanelProps>) {
   return (
     <>
-      {isOpen && (
-        <div className="absolute bg-black/40 inset-0 z-10" onClick={onClose} />
-      )}
-      <Card
+      <div
+        onClick={onClose}
         className={clsx(
-          "min-w-64 rounded-none absolute right-0 inset-y-0 z-10 transition-all duration-200",
-          isOpen ? "translate-x-0" : "translate-x-100"
+          "fixed inset-0 bg-black/40 z-30 transition-opacity",
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+      />
+
+      <aside
+        className={clsx(
+          "fixed inset-y-0 right-0 z-40 w-80 bg-card border-l shadow-lg transition-transform duration-200",
+          isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-slate-900 text-white">
-          <CardTitle className="text-base">{title}</CardTitle>
-          <div className="flex gap-2 items-center">
+        <div className="h-14 flex items-center justify-between px-4 border-b">
+          <h2 className="font-semibold">{title}</h2>
+          <div className="flex items-center gap-2">
             {onClear && (
               <Button onClick={onClear} variant="ghost" size="sm">
                 Limpar
@@ -41,11 +45,11 @@ export default function FilterPanel({
               <X className="h-4 w-4" />
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="flex flex-col">
-          {children}
-        </CardContent>
-      </Card>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-6">{children}</div>
+        </div>
+      </aside>
     </>
   );
 }

@@ -8,22 +8,9 @@ import { purchaseRepository } from "../repositories/PurchaseRepository";
 import { supplierRepository } from "../repositories/SupplierRepository";
 import { transactionRepository } from "../repositories/TransactionRepository";
 import type { ComercialItem } from "../types/ComercialItem";
-import type { PaymentStatus } from "../types/Payment";
-import type { SalePurchaseStatus } from "../types/SalePurchaseStatus";
+import type { PurchaseFilters } from "../types/Filters";
 
-type PurchaseFilters = {
-  search?: string;
-  totalValue?: {
-    min: number;
-    max?: number;
-  };
-  paymentStatus?: PaymentStatus;
-  status?: SalePurchaseStatus;
-  dateRange: {
-    start: string;
-    end: string;
-  };
-};
+
 
 type StockChanges = { productId: number; quantity: number };
 export type PurchaseWithPayStatus = Purchase & { paymentStatus: string };

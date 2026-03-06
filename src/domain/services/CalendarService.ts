@@ -4,14 +4,7 @@ import type {
 } from "../dtos/CalendarEventDTO";
 import type { CalendarEvent } from "../entities/calendar";
 import { calendarRepository } from "../repositories/CalendarRepository";
-
-type CalendarFilters = {
-  search?: string;
-  dateRange: {
-    start: string;
-    end: string;
-  };
-};
+import type { CalendarFilters } from "../types/Filters";
 
 class CalendarService {
   async create(data: CreateCalendarEventDTO): Promise<number> {

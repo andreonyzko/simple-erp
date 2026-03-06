@@ -1,15 +1,9 @@
 import type { CreateServiceDTO, UpdateServiceDTO } from "../dtos/ServiceDTO";
 import type { Service } from "../entities/service";
 import { serviceRepository } from "../repositories/ServiceRepository";
+import type { ServiceFilters } from "../types/Filters";
 
-type ServiceFilters = {
-  search?: string;
-  price?: {
-    min: number;
-    max?: number;
-  };
-  active?: boolean;
-};
+
 
 class ServiceService {
   async create(data: CreateServiceDTO): Promise<number> {

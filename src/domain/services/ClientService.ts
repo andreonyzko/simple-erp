@@ -4,15 +4,9 @@ import type { Sale } from "../entities/sale";
 import { clientRepository } from "../repositories/ClientRepository";
 import { saleRepository } from "../repositories/SaleRepository";
 import { transactionRepository } from "../repositories/TransactionRepository";
+import type { ClientFilters } from "../types/Filters";
 
-type ClientFilters = {
-  search?: string;
-  active?: boolean;
-  debts?: {
-    min: number;
-    max?: number;
-  };
-};
+
 
 type ClientWithDebt = Client & {
   debt: number;

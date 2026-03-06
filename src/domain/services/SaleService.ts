@@ -9,22 +9,7 @@ import { saleRepository } from "../repositories/SaleRepository";
 import { serviceRepository } from "../repositories/ServiceRepository";
 import { transactionRepository } from "../repositories/TransactionRepository";
 import type { ComercialItem } from "../types/ComercialItem";
-import type { PaymentStatus } from "../types/Payment";
-import type { SalePurchaseStatus } from "../types/SalePurchaseStatus";
-
-type SaleFilters = {
-  search?: string;
-  totalValue?: {
-    min: number;
-    max?: number;
-  };
-  paymentStatus?: PaymentStatus;
-  status?: SalePurchaseStatus;
-  dateRange: {
-    start: string;
-    end: string;
-  };
-};
+import type { SaleFilters } from "../types/Filters";
 
 type StockChanges = {
   productId: number;

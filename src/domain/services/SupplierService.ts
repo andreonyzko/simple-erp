@@ -4,15 +4,8 @@ import type { Purchase } from "../entities/purchase";
 import { purchaseRepository } from "../repositories/PurchaseRepository";
 import { supplierRepository } from "../repositories/SupplierRepository";
 import { transactionRepository } from "../repositories/TransactionRepository";
+import type { SupplierFilters } from "../types/Filters";
 
-type SupplierFilters = {
-  search?: string;
-  active?: boolean;
-  debts?: {
-    min: number;
-    max?: number;
-  };
-};
 
 export type SupplierWithDebt = Supplier & { debt: number };
 

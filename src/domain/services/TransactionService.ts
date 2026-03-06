@@ -1,22 +1,8 @@
 import type { CreateTransactionDTO } from "../dtos/TransactionDTO";
 import type { Transaction } from "../entities/transaction";
 import { transactionRepository } from "../repositories/TransactionRepository";
-import type { TransactionOrigin } from "../types/Transaction";
-import type { TransactionType } from "../types/Transaction";
+import type { TransactionFilters } from "../types/Filters";
 
-type TransactionFilters = {
-  search?: string;
-  origin?: TransactionOrigin;
-  type?: TransactionType;
-  value?: {
-    min: number;
-    max?: number;
-  };
-  dateRange: {
-    start: string;
-    end: string;
-  };
-};
 
 class TransactionService {
   async createManual(data: CreateTransactionDTO): Promise<number> {

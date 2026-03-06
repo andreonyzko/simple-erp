@@ -1,0 +1,1 @@
+export type StockStatus = "no-control" | "in-stock" | "out-stock";

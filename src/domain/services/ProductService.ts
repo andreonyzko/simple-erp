@@ -2,20 +2,9 @@ import type { CreateProductDTO, UpdateProductDTO } from "../dtos/ProductDTO";
 import type { Product } from "../entities/product";
 import { productRepository } from "../repositories/ProductRepository";
 import { supplierRepository } from "../repositories/SupplierRepository";
+import type { ProductFilters } from "../types/Filters";
 
-type ProductFilters = {
-  search?: string;
-  stock?: "no-control" | "in-stock" | "out-stock";
-  cost?: {
-    min: number;
-    max?: number;
-  };
-  sellPrice?: {
-    min: number;
-    max?: number;
-  };
-  active?: boolean;
-};
+
 
 class ProductService {
   async create(data: CreateProductDTO): Promise<number> {

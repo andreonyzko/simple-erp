@@ -1,5 +1,3 @@
 export default function TransactionCreatePage() {
-  return (
-    <div>TransactionCreatePage</div>
-  )
+ return <div>TransacitonCreatePage</div>
 }

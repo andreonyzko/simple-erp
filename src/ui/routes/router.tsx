@@ -34,6 +34,21 @@ import SupplierDetailPage from "../pages/suppliers/SupplierDetailPage";
 import ProductDetailPage from "../pages/products/ProductDetailPage";
 import ServiceDetailPage from "../pages/services/ServiceDetailPage";
 import TransactionDetailPage from "../pages/transactions/TransactionDetailPage";
+import { calendarDetailLoader } from "./calendar/calendarDetailLoader";
+import { salesListLoader } from "./sales/salesListLoader";
+import { saleDetailLoader } from "./sales/saleDetailLoader";
+import { purchasesListLoader } from "./purchases/purchasesListLoader";
+import { purchaseDetailLoader } from "./purchases/purchaseDetailLoader";
+import { clientsListLoader } from "./clients/clientsListLoader";
+import { clientDetailLoader } from "./clients/clientDetailLoader";
+import { suppliersListLoader } from "./suppliers/suppliersListLoader";
+import { supplierDetailLoader } from "./suppliers/supplierDetailLoader";
+import { productsListLoader } from "./products/productsListLoader";
+import { productDetailLoader } from "./products/productDetailLoader";
+import { servicesListLoader } from "./services/servicesListLoader";
+import { serviceDetailLoader } from "./services/serviceDetailLoader";
+import { transactionsListLoader } from "./transactions/transactionsListLoader";
+import { transactionDetailLoader } from "./transactions/transactionDetailLoader";
 
 export const router = createBrowserRouter([
   {
@@ -52,14 +67,15 @@ export const router = createBrowserRouter([
         handle: { title: ["Agenda"] } satisfies RouteHandle,
       },
       {
-        path: "agenda/:id",
-        element: <CalendarDetailPage />,
-        handle: { title: ["Agenda", "Detalhes"] } satisfies RouteHandle,
-      },
-      {
         path: "agenda/cadastrar",
         element: <CalendarCreatePage />,
         handle: { title: ["Agenda", "Cadastro"] } satisfies RouteHandle,
+      },
+      {
+        path: "agenda/:id",
+        element: <CalendarDetailPage />,
+        loader: calendarDetailLoader,
+        handle: { title: ["Agenda", "Detalhes"] } satisfies RouteHandle,
       },
       {
         path: "agenda/:id/editar",
@@ -69,20 +85,22 @@ export const router = createBrowserRouter([
       {
         path: "vendas",
         element: <SalesListPage />,
+        loader: salesListLoader,
         handle: { title: ["Operações", "Vendas"] } satisfies RouteHandle,
-      },
-      {
-        path: "vendas/:id",
-        element: <SaleDetailPage />,
-        handle: {
-          title: ["Operações", "Vendas", "Detalhes"],
-        } satisfies RouteHandle,
       },
       {
         path: "vendas/cadastrar",
         element: <SaleCreatePage />,
         handle: {
           title: ["Operações", "Vendas", "Cadastro"],
+        } satisfies RouteHandle,
+      },
+      {
+        path: "vendas/:id",
+        element: <SaleDetailPage />,
+        loader: saleDetailLoader,
+        handle: {
+          title: ["Operações", "Vendas", "Detalhes"],
         } satisfies RouteHandle,
       },
       {
@@ -95,20 +113,22 @@ export const router = createBrowserRouter([
       {
         path: "compras",
         element: <PurchasesListPage />,
+        loader: purchasesListLoader,
         handle: { title: ["Operações", "Compras"] } satisfies RouteHandle,
-      },
-      {
-        path: "compras/:id",
-        element: <PurchaseDetailPage />,
-        handle: {
-          title: ["Operações", "Compras", "Detalhes"],
-        } satisfies RouteHandle,
       },
       {
         path: "compras/cadastrar",
         element: <PurchaseCreatePage />,
         handle: {
           title: ["Operações", "Compras", "Cadastro"],
+        } satisfies RouteHandle,
+      },
+      {
+        path: "compras/:id",
+        element: <PurchaseDetailPage />,
+        loader: purchaseDetailLoader,
+        handle: {
+          title: ["Operações", "Compras", "Detalhes"],
         } satisfies RouteHandle,
       },
       {
@@ -121,20 +141,22 @@ export const router = createBrowserRouter([
       {
         path: "clientes",
         element: <ClientsListPage />,
+        loader: clientsListLoader,
         handle: { title: ["Pessoas", "Clientes"] } satisfies RouteHandle,
-      },
-      {
-        path: "clientes/:id",
-        element: <ClientDetailPage />,
-        handle: {
-          title: ["Pessoas", "Clientes", "Detalhes"],
-        } satisfies RouteHandle,
       },
       {
         path: "clientes/cadastrar",
         element: <ClientCreatePage />,
         handle: {
           title: ["Pessoas", "Clientes", "Cadastro"],
+        } satisfies RouteHandle,
+      },
+      {
+        path: "clientes/:id",
+        element: <ClientDetailPage />,
+        loader: clientDetailLoader,
+        handle: {
+          title: ["Pessoas", "Clientes", "Detalhes"],
         } satisfies RouteHandle,
       },
       {
@@ -147,20 +169,22 @@ export const router = createBrowserRouter([
       {
         path: "fornecedores",
         element: <SuppliersListPage />,
+        loader: suppliersListLoader,
         handle: { title: ["Pessoas", "Fornecedores"] } satisfies RouteHandle,
-      },
-      {
-        path: "fornecedores/:id",
-        element: <SupplierDetailPage />,
-        handle: {
-          title: ["Pessoas", "Fornecedores", "Detalhes"],
-        } satisfies RouteHandle,
       },
       {
         path: "fornecedores/cadastrar",
         element: <SupplierCreatePage />,
         handle: {
           title: ["Pessoas", "Fornecedores", "Cadastro"],
+        } satisfies RouteHandle,
+      },
+      {
+        path: "fornecedores/:id",
+        element: <SupplierDetailPage />,
+        loader: supplierDetailLoader,
+        handle: {
+          title: ["Pessoas", "Fornecedores", "Detalhes"],
         } satisfies RouteHandle,
       },
       {
@@ -173,20 +197,22 @@ export const router = createBrowserRouter([
       {
         path: "produtos",
         element: <ProductsListPage />,
+        loader: productsListLoader,
         handle: { title: ["Domínios", "Produtos"] } satisfies RouteHandle,
-      },
-      {
-        path: "produtos/:id",
-        element: <ProductDetailPage />,
-        handle: {
-          title: ["Domínios", "Produtos", "Detalhes"],
-        } satisfies RouteHandle,
       },
       {
         path: "produtos/cadastrar",
         element: <ProductCreatePage />,
         handle: {
           title: ["Domínios", "Produtos", "Cadastro"],
+        } satisfies RouteHandle,
+      },
+      {
+        path: "produtos/:id",
+        element: <ProductDetailPage />,
+        loader: productDetailLoader,
+        handle: {
+          title: ["Domínios", "Produtos", "Detalhes"],
         } satisfies RouteHandle,
       },
       {
@@ -199,20 +225,22 @@ export const router = createBrowserRouter([
       {
         path: "servicos",
         element: <ServicesListPage />,
+        loader: servicesListLoader,
         handle: { title: ["Domínios", "Serviços"] } satisfies RouteHandle,
-      },
-      {
-        path: "servicos/:id",
-        element: <ServiceDetailPage />,
-        handle: {
-          title: ["Domínios", "Serviços", "Detalhes"],
-        } satisfies RouteHandle,
       },
       {
         path: "servicos/cadastrar",
         element: <ServiceCreatePage />,
         handle: {
           title: ["Domínios", "Serviços", "Cadastro"],
+        } satisfies RouteHandle,
+      },
+      {
+        path: "servicos/:id",
+        element: <ServiceDetailPage />,
+        loader: serviceDetailLoader,
+        handle: {
+          title: ["Domínios", "Serviços", "Detalhes"],
         } satisfies RouteHandle,
       },
       {
@@ -225,19 +253,21 @@ export const router = createBrowserRouter([
       {
         path: "financeiro/extrato",
         element: <TransactionsListPage />,
+        loader: transactionsListLoader,
         handle: { title: ["Financeiro", "Extratos"] } satisfies RouteHandle,
+      },
+      {
+        path: "financeiro/extrato/cadastrar",
+        element: <TransactionCreatePage />,
+        handle: { title: ["Financeiro", "Cadastro"] } satisfies RouteHandle,
       },
       {
         path: "financeiro/extrato/:id",
         element: <TransactionDetailPage />,
+        loader: transactionDetailLoader,
         handle: {
           title: ["Financeiro", "Extratos", "Detalhes"],
         } satisfies RouteHandle,
-      },
-      {
-        path: "financeiro/cadastrar",
-        element: <TransactionCreatePage />,
-        handle: { title: ["Financeiro", "Cadastro"] } satisfies RouteHandle,
       },
     ],
   },

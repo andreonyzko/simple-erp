@@ -30,7 +30,7 @@ export default function TransactionsListPage() {
         title="Extratos"
         pageDescription="Visualize e crie novas movimentações financeiras"
         createLabel="Nova movimentação"
-        createPath="/financeiro/cadastrar"
+        createPath="/financeiro/extrato/cadastrar"
         searchPlaceholder="Buscar movimentação..."
         searchValue={searchInput}
         onSearchChange={setSearchInput}

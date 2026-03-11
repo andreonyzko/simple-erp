@@ -115,5 +115,3 @@ Para informações detalhadas sobre arquitetura, domínio e padrões de desenvol
 | 🔍 [`SEARCH_FILTERS.md`](docs/SEARCH_FILTERS.md)       | Sistema de busca e filtros  |
 
 ---
-
-**Desenvolvido com ❤️ para pequenos e médios negócios**
